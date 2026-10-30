@@ -18,6 +18,13 @@
            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{{ progress }}% Complete</p>
            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{{ completedLessons }}/{{ totalLessons }} Lessons</p>
         </div>
+        <!-- 12-month access period (Terms v2.2 clause 6) -->
+        <p v-if="access?.access_expired" class="mt-3 text-xs font-semibold text-red-600">
+          Access ended on {{ access.access_expiry_display }}
+        </p>
+        <p v-else-if="access?.access_status === 'active' && access.access_expiry_display" class="mt-3 text-xs font-medium text-slate-500">
+          Access until {{ access.access_expiry_display }}
+        </p>
       </div>
 
       <!-- 3-Tab Bar -->
@@ -508,6 +515,8 @@ const totalLessons = ref(0)
 const completedLessons = ref(0)
 const error = ref(null)
 const loading = ref(true)
+// course-access period from get_learning_content (access_status, access_expiry_display, access_expired)
+const access = ref(null)
 const showQuiz = ref(false)
 
 // Tab system
@@ -616,6 +625,7 @@ async function loadCourseData() {
           const result = data.message
           course.value = result.course
           curriculum.value = result.curriculum
+          access.value = result.access || null
 
           let total = 0
           let done = 0
@@ -639,6 +649,14 @@ async function loadCourseData() {
              currentLesson.value = savedLesson || firstUncompleted || allLessons[0]
           } else {
              currentLesson.value = firstUncompleted || allLessons[0]
+          }
+
+          if (access.value?.access_expired) {
+             // the server sends no lesson content after the access period;
+             // the curriculum, progress and results stay visible
+             const a = access.value
+             currentLesson.value = null
+             error.value = `Your 12-month access to this course ended on ${a.access_expiry_display}. Your progress, results and certificates are kept. Please contact support@courseflick.com to renew.`
           }
 
       } else {
@@ -697,6 +715,7 @@ async function loadExams() {
 
 // Lesson actions
 function playLesson(lesson) {
+   if (access.value?.access_expired) return
    activeTab.value = 'lessons'
    viewMode.value = 'lesson'
    currentLesson.value = lesson
@@ -710,6 +729,7 @@ function selectMockTest(quiz) {
 }
 
 function launchMockTest(quiz) {
+  if (access.value?.access_expired) return
   activeMockTestId.value = quiz.name
   viewMode.value = 'takingMockTest'
 }
@@ -726,6 +746,7 @@ function selectExam(exam) {
 }
 
 function launchExam(exam) {
+  if (access.value?.access_expired) return
   activeExamId.value = exam.name
   viewMode.value = 'takingExam'
 }

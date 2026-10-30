@@ -40,9 +40,16 @@
             <div class="flex justify-between text-xs text-gray-400 mb-4">
                <span>{{ course.progress }}% Complete</span>
             </div>
+            <!-- 12-month access period (Terms v2.2 clause 6) -->
+            <p v-if="course.access_expired" class="text-xs font-semibold text-red-600 mb-4">
+               Access ended on {{ course.access_expiry_display }}. Your progress, results and certificates are kept.
+            </p>
+            <p v-else-if="course.access_status === 'active' && course.access_expiry_display" class="text-xs text-gray-500 mb-4">
+               Access until {{ course.access_expiry_display }}
+            </p>
             
             <router-link :to="`/portal/learn/${course.id}`" class="w-full py-2 flex justify-center items-center border border-brown-200 text-brown-700 font-medium rounded-lg hover:bg-brown-50 transition-colors">
-               {{ course.progress >= 100 ? 'Review Course' : 'Continue Learning' }}
+               {{ course.access_expired ? 'View Progress' : (course.progress >= 100 ? 'Review Course' : 'Continue Learning') }}
             </router-link>
          </div>
        </div>

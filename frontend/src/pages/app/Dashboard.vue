@@ -55,6 +55,13 @@
                    <div class="h-full bg-gradient-to-r from-gold-500 to-brown-500 rounded-full" :style="{ width: recentCourse.progress + '%' }"></div>
                 </div>
                 <p class="text-xs text-gray-400">Last lesson: {{ recentCourse.lastLesson }}</p>
+                <!-- 12-month access period (Terms v2.2 clause 6) -->
+                <p v-if="recentCourse.access_expired" class="text-xs font-semibold text-red-600">
+                   Access ended on {{ recentCourse.access_expiry_display }}
+                </p>
+                <p v-else-if="recentCourse.access_status === 'active' && recentCourse.access_expiry_display" class="text-xs text-gray-500">
+                   Access until {{ recentCourse.access_expiry_display }}
+                </p>
              </div>
 
              <router-link :to="`/portal/learn/${recentCourse.id}`" class="w-full sm:w-auto px-6 py-3 bg-brown-700 hover:bg-brown-800 text-white font-semibold rounded-xl transition-colors flex items-center justify-center gap-2">
@@ -157,7 +164,10 @@ async function fetchRecentCourse() {
             image: handleImagePath(course.image),
             progress: Math.round(course.progress),
             lastLesson: course.lastLesson,
-            enrollment_name: course.enrollment_name
+            enrollment_name: course.enrollment_name,
+            access_status: course.access_status,
+            access_expired: course.access_expired,
+            access_expiry_display: course.access_expiry_display
          }
       }
    } catch (e) {
