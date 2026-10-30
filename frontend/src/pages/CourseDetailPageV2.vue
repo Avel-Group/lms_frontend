@@ -2,7 +2,7 @@
   <div v-if="loading" class="min-h-screen flex items-center justify-center bg-gray-50/50">
     <div class="flex flex-col items-center gap-4">
       <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-slate-900"></div>
-      <p class="text-xs font-bold text-slate-400 uppercase tracking-widest animate-pulse">
+      <p class="text-xs font-bold text-slate-600 uppercase tracking-widest animate-pulse">
         Loading Course Data...
       </p>
     </div>
@@ -14,7 +14,7 @@
   >
     <div class="max-w-md space-y-6">
       <div
-        class="w-20 h-20 mx-auto rounded-3xl bg-slate-50 flex items-center justify-center text-slate-400"
+        class="w-20 h-20 mx-auto rounded-3xl bg-slate-50 flex items-center justify-center text-slate-500"
       >
         <AlertCircleIcon class="w-8 h-8" />
       </div>
@@ -39,16 +39,16 @@
     >
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center">
         <nav
-          class="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.15em] text-gray-400"
+          class="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.15em] text-gray-600"
         >
           <router-link to="/" class="hover:text-slate-900 transition-colors"
             >Home</router-link
           >
-          <ChevronRightIcon class="w-3 h-3 text-gray-300" />
+          <ChevronRightIcon class="w-3 h-3 text-gray-500" />
           <router-link to="/courses" class="hover:text-slate-900 transition-colors"
             >Courses</router-link
           >
-          <ChevronRightIcon class="w-3 h-3 text-gray-300" />
+          <ChevronRightIcon class="w-3 h-3 text-gray-500" />
           <span class="text-slate-900 truncate max-w-[200px]">{{ course.title }}</span>
         </nav>
       </div>
@@ -99,7 +99,7 @@
                 </div>
                 <div>
                   <p
-                    class="text-[9px] font-black uppercase tracking-widest text-slate-400"
+                    class="text-[9px] font-black uppercase tracking-widest text-slate-600"
                   >
                     Duration
                   </p>
@@ -116,7 +116,7 @@
                 </div>
                 <div>
                   <p
-                    class="text-[9px] font-black uppercase tracking-widest text-slate-400"
+                    class="text-[9px] font-black uppercase tracking-widest text-slate-600"
                   >
                     Content
                   </p>
@@ -153,7 +153,7 @@
                   {{ (course.course_price || 0).toLocaleString() }}</span
                 >
                 <span
-                  class="text-[9px] font-black uppercase tracking-widest text-slate-400"
+                  class="text-[9px] font-black uppercase tracking-widest text-slate-600"
                   >Total Fee</span
                 >
               </div>
@@ -208,7 +208,7 @@
               <h3 class="text-2xl font-display font-bold text-slate-900">
                 Training Modules
               </h3>
-              <span class="text-xs font-bold text-slate-400"
+              <span class="text-xs font-bold text-slate-600"
                 >{{ course.curriculum.length }} Total Modules</span
               >
             </div>
@@ -228,7 +228,7 @@
                   class="p-6 cursor-pointer flex items-start gap-6 select-none"
                 >
                   <div
-                    class="w-12 h-12 rounded-xl bg-gray-50 flex items-center justify-center text-sm font-black text-gray-400 transition-colors group-hover:bg-[#800000] group-hover:text-white"
+                    class="w-12 h-12 rounded-xl bg-gray-50 flex items-center justify-center text-sm font-black text-gray-600 transition-colors group-hover:bg-[#800000] group-hover:text-white"
                     :class="{ 'bg-slate-900 text-white': mod.isOpen }"
                   >
                     {{ (i + 1).toString().padStart(2, "0") }}
@@ -254,7 +254,7 @@
                     </div>
                   </div>
                   <div
-                    class="w-10 h-10 rounded-full border border-gray-100 flex items-center justify-center text-gray-300 transition-transform duration-300 group-hover:border-[#800000]/20 group-hover:text-[#800000]"
+                    class="w-10 h-10 rounded-full border border-gray-100 flex items-center justify-center text-gray-500 transition-transform duration-300 group-hover:border-[#800000]/20 group-hover:text-[#800000]"
                     :class="{ 'rotate-90 bg-slate-50 text-slate-900': mod.isOpen }"
                   >
                     <ChevronRightIcon class="w-5 h-5" />
@@ -273,7 +273,7 @@
                       class="flex items-center gap-4 text-sm group/lesson cursor-pointer hover:bg-white p-3 rounded-xl transition-colors"
                     >
                       <div
-                        class="w-8 h-8 rounded-lg bg-white border border-gray-100 flex items-center justify-center text-slate-400 group-hover/lesson:text-[#800000] group-hover/lesson:border-[#800000]/20 shadow-sm"
+                        class="w-8 h-8 rounded-lg bg-white border border-gray-100 flex items-center justify-center text-slate-500 group-hover/lesson:text-[#800000] group-hover/lesson:border-[#800000]/20 shadow-sm"
                       >
                         <PlayCircleIcon v-if="lesson.is_video" class="w-4 h-4" />
                         <AlertCircleIcon v-else-if="lesson.is_quiz" class="w-4 h-4" />
@@ -283,13 +283,13 @@
                         class="flex-1 font-medium text-slate-600 group-hover/lesson:text-slate-900"
                         >{{ lesson.title }}</span
                       >
-                      <span class="text-xs font-bold text-slate-400">{{
+                      <span class="text-xs font-bold text-slate-600">{{
                         lesson.duration
                       }}</span>
                     </li>
                     <li
                       v-if="!mod.lessons || mod.lessons.length === 0"
-                      class="text-xs text-slate-400 italic pl-14"
+                      class="text-xs text-slate-600 italic pl-14"
                     >
                       No lessons available for preview.
                     </li>
@@ -338,7 +338,7 @@
         <aside class="lg:col-span-4 space-y-10">
           <!-- Quick Summary Card -->
           <div class="bg-white rounded-2xl p-8 border border-gray-100 shadow-sm">
-            <h4 class="text-xs font-black uppercase tracking-widest text-slate-400 mb-6">
+            <h4 class="text-xs font-black uppercase tracking-widest text-slate-600 mb-6">
               Program Highlights
             </h4>
             <ul class="space-y-4">
@@ -417,7 +417,7 @@
             class="bg-gray-50 rounded-2xl p-8 border border-gray-100"
             v-if="prereqs.length"
           >
-            <h4 class="text-xs font-black uppercase tracking-widest text-slate-400 mb-6">
+            <h4 class="text-xs font-black uppercase tracking-widest text-slate-600 mb-6">
               Prerequisites
             </h4>
             <ul class="space-y-4">
@@ -426,7 +426,7 @@
                 :key="i"
                 class="flex gap-3 text-sm text-slate-500 leading-relaxed"
               >
-                <span class="text-slate-300 shrink-0">&rarr;</span>
+                <span class="text-slate-500 shrink-0">&rarr;</span>
                 {{ pre }}
               </li>
             </ul>
