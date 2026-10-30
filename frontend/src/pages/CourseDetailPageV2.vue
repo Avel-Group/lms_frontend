@@ -298,41 +298,6 @@
               </div>
             </div>
           </section>
-
-          <!-- Instructor Info (Simplified) -->
-          <section
-            v-if="course.custom_instructor_name"
-            class="pt-10 border-t border-gray-100"
-          >
-            <div class="flex items-start gap-8">
-              <div
-                class="w-16 h-16 rounded-2xl overflow-hidden shrink-0 bg-slate-100 ring-4 ring-white shadow-lg"
-              >
-                <img
-                  v-if="!avatarFailed && safeImagePath(course.custom_instructor_image)"
-                  :src="safeImagePath(course.custom_instructor_image)"
-                  alt=""
-                  class="w-full h-full object-cover"
-                  @error="onAvatarError"
-                />
-              </div>
-              <div class="space-y-2">
-                <h3 class="text-sm font-bold text-[#800000] uppercase tracking-widest">
-                  Lead Instructor
-                </h3>
-                <h4 class="text-2xl font-display font-bold text-slate-900">
-                  {{ course.custom_instructor_name }}
-                </h4>
-                <!-- no approved text: the quote is omitted (r3 finding 4) -->
-                <p
-                  v-if="course.custom_instructor_quote"
-                  class="text-slate-500 text-base leading-relaxed max-w-2xl"
-                >
-                  {{ course.custom_instructor_quote }}
-                </p>
-              </div>
-            </div>
-          </section>
         </div>
 
         <!-- Right Sidebar -->
