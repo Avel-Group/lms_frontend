@@ -241,7 +241,8 @@ async function fetchCategories() {
 }
 
 function handleImagePath(path) {
-  if (!path) return "https://placehold.co/600x400/F5E6D8/5B2C0E?text=CourseFlick";
+  // No image on the course record: the card shows its tinted panel (no external image).
+  if (!path) return "";
   if (path.startsWith("http")) return path;
   if (path.startsWith("/images")) return `/assets/lms_frontend/frontend${path}`;
   return path;

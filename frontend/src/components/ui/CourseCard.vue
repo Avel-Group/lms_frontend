@@ -1,13 +1,18 @@
 <template>
-  <div
-    @click="goToDetail"
-    class="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-lg transition-shadow duration-300 flex flex-col cursor-pointer group"
+  <!-- The whole card is one native link, so it works with Tab + Enter as well as a click -->
+  <router-link
+    :to="{ name: detailRoute, params: { id } }"
+    :aria-label="`${title}: view course`"
+    class="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-lg transition-shadow duration-300 flex flex-col cursor-pointer group focus:outline-none focus-visible:ring-2 focus-visible:ring-brown-700 focus-visible:ring-offset-2"
   >
     <!-- Image -->
     <div class="relative aspect-[16/10] bg-brown-100 overflow-hidden">
       <img
+        v-if="image && !imageFailed"
         :src="image"
-        :alt="title"
+        alt=""
+        loading="lazy"
+        decoding="async"
         class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
         @error="onImgError"
       />
@@ -62,14 +67,12 @@
         </span>
       </div>
     </div>
-  </div>
+  </router-link>
 </template>
 
 <script setup>
-import { computed } from 'vue'
-import { useRouter } from 'vue-router'
+import { computed, ref, watch } from 'vue'
 
-const router = useRouter()
 
 const props = defineProps({
   id: { type: [Number, String], required: true },
@@ -93,9 +96,6 @@ const showDuration = computed(() => {
 })
 const showLessons = computed(() => Number(props.lessons) > 0)
 
-function goToDetail() {
-  router.push({ name: props.detailRoute, params: { id: props.id } })
-}
 
 const levelClass = computed(() => {
   const map = {
@@ -106,7 +106,10 @@ const levelClass = computed(() => {
   return map[props.level] || 'bg-brown-50 text-brown-700'
 })
 
-function onImgError(e) {
-  e.target.src = 'https://placehold.co/600x375/F5E6D8/5B2C0E?text=CourseFlick'
+// A missing or failed course image is hidden and the tinted panel stays (no external image).
+const imageFailed = ref(false)
+watch(() => props.image, () => { imageFailed.value = false })
+function onImgError() {
+  imageFailed.value = true
 }
 </script>
