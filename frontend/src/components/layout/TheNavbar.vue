@@ -121,7 +121,7 @@
         </div>
 
         <!-- Mobile hamburger -->
-        <button type="button" class="md:hidden p-2 text-white" :aria-label="mobileMenuOpen ? 'Close menu' : 'Open menu'" :aria-expanded="mobileMenuOpen ? 'true' : 'false'" @click="mobileMenuOpen = !mobileMenuOpen">
+        <button ref="menuButton" type="button" class="md:hidden p-2 text-white" aria-controls="mobile-menu" :aria-label="mobileMenuOpen ? 'Close menu' : 'Open menu'" :aria-expanded="mobileMenuOpen ? 'true' : 'false'" @click="mobileMenuOpen = !mobileMenuOpen">
           <svg v-if="!mobileMenuOpen" class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2"
             viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
@@ -137,7 +137,7 @@
     <transition enter-active-class="transition duration-200 ease-out" enter-from-class="opacity-0 -translate-y-2"
       enter-to-class="opacity-100 translate-y-0" leave-active-class="transition duration-150 ease-in"
       leave-from-class="opacity-100 translate-y-0" leave-to-class="opacity-0 -translate-y-2">
-      <div v-if="mobileMenuOpen" class="md:hidden bg-brown-900 border-t border-white/10 pb-4">
+      <div v-show="mobileMenuOpen" id="mobile-menu" class="md:hidden bg-brown-900 border-t border-white/10 pb-4">
         <div class="px-4 space-y-1 pt-2">
           <router-link v-for="link in navLinks" :key="link.label" :to="link.to"
             class="block px-3 py-2 text-sm font-medium text-white/80 hover:text-white hover:bg-white/10 rounded-lg"
@@ -189,7 +189,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { navLinks } from '../../data/navigation.js'
 import { useAuth } from '../../composables/useAuth.js'
 
@@ -197,8 +197,23 @@ const { user, loading, fetchUser, logout } = useAuth()
 const mobileMenuOpen = ref(false)
 const userDropdownOpen = ref(false)
 
+const menuButton = ref(null)
+
+// Escape closes the mobile menu and returns focus to the menu button.
+function onKeydown(e) {
+  if (e.key === 'Escape' && mobileMenuOpen.value) {
+    mobileMenuOpen.value = false
+    menuButton.value?.focus()
+  }
+}
+
 onMounted(() => {
   fetchUser()
+  document.addEventListener('keydown', onKeydown)
+})
+
+onBeforeUnmount(() => {
+  document.removeEventListener('keydown', onKeydown)
 })
 
 function onLogoError(e) {

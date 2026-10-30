@@ -8,7 +8,8 @@
 
       <div class="mt-12 divide-y divide-gray-100">
         <ProgramCard v-for="(program, index) in data.built_list" :key="program.sub_title" :title="program.sub_title"
-          :description="program.description" :image="program.right_image" :icon="program.icon" :reverse="index % 2 !== 0" />
+          :description="program.description" :image="program.right_image" :icon="program.icon" :alt="program.image_alt || ''"
+          :reverse="index % 2 !== 0" />
       </div>
 
       <!-- Individual courses are reached through the catalogue -->

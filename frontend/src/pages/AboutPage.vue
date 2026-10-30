@@ -19,7 +19,7 @@
         <div class="flex flex-col lg:flex-row items-center gap-12 lg:gap-16">
           <div class="flex-1">
             <div class="rounded-2xl overflow-hidden bg-brown-100 aspect-[4/3]">
-              <img v-if="failedImage !== value.left_image" :src='check_Image(value.left_image)' alt="A learner writing notes beside a laptop" class="w-full h-full object-cover" loading="lazy" decoding="async" @error="onImgError(value.left_image)" />
+              <img v-if="failedImage !== value.left_image" :src='check_Image(value.left_image)' alt="Person writing notes beside a laptop" class="w-full h-full object-cover" loading="lazy" decoding="async" @error="onImgError(value.left_image)" />
             </div>
           </div>
           <div class="flex-1 space-y-5">
