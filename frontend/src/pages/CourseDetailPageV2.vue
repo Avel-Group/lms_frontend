@@ -65,9 +65,10 @@
             <div class="space-y-6">
               <div class="flex flex-wrap items-center gap-3">
                 <span
+                  v-if="course.category_label"
                   class="px-4 py-1.5 rounded-full bg-slate-50 border border-gray-100 text-[10px] font-black uppercase tracking-[0.2em] text-slate-600"
                 >
-                  {{ course.category_label || "Aviation" }}
+                  {{ course.category_label }}
                 </span>
                 <span
                   v-if="course.is_enrolled"
@@ -125,23 +126,7 @@
                   </p>
                 </div>
               </div>
-              <div class="flex items-center gap-3">
-                <div
-                  class="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-yellow-500"
-                >
-                  <StarIcon class="w-5 h-5 fill-current" />
-                </div>
-                <div>
-                  <p
-                    class="text-[9px] font-black uppercase tracking-widest text-slate-400"
-                  >
-                    Rating
-                  </p>
-                  <p class="text-sm font-bold text-slate-900">
-                    {{ course.custom_rating || "4.9" }} / 5.0
-                  </p>
-                </div>
-              </div>
+              <!-- No rating is shown: there are no published reviews behind it (Decision D12, confirmed in t91u item 7) -->
             </div>
 
             <!-- CTA Actions -->
@@ -331,6 +316,7 @@
                 class="w-16 h-16 rounded-2xl overflow-hidden shrink-0 bg-slate-100 ring-4 ring-white shadow-lg"
               >
                 <img
+                  v-if="!avatarFailed"
                   :src="handleImagePath(course.custom_instructor_image)"
                   class="w-full h-full object-cover"
                   @error="onAvatarError"
@@ -475,7 +461,6 @@
             :duration="rel.custom_duration_text || '4 Weeks'"
             :lessons="rel.custom_lessons_count || 12"
             :level="rel.custom_level || 'Professional'"
-            :rating="rel.custom_rating || 5.0"
             :students="rel.custom_students_count || 150"
             detail-route="CourseDetail"
           />
@@ -493,7 +478,6 @@ import {
   BookOpenIcon,
   ChevronRightIcon,
   CheckIcon,
-  StarIcon,
   ArrowRightIcon,
   AlertCircleIcon,
   PlayCircleIcon,
@@ -501,6 +485,8 @@ import {
 import { useAuth } from "../composables/useAuth";
 import CourseCard from "../components/ui/CourseCard.vue";
 import { domain } from "../data/helper";
+import { createLatestGuard, safeImagePath } from "../data/imagePolicy";
+import { acceptCourseResponse, stillOnCourse } from "../data/courseResponse";
 
 const route = useRoute();
 const router = useRouter();
@@ -537,18 +523,40 @@ function parseListHtml(html) {
 const outcomes = computed(() => parseListHtml(course.value?.custom_learning_outcomes));
 const prereqs = computed(() => parseListHtml(course.value?.custom_prerequisites));
 
+// Route changes between courses: the previous course is cleared and the loading state is shown
+// at once (so its details and enrol button cannot be used for the new URL), and a response is
+// applied only if it belongs to the newest request (a slow earlier response is discarded).
+const requests = createLatestGuard();
+
 async function fetchCourseDetails() {
   const id = route.params.id;
-  if (!id) return;
-
+  const token = requests.next();
+  course.value = null;
+  avatarFailed.value = false;
+  loading.value = true;
+  if (!id) {
+    loading.value = false;
+    return;
+  }
+  let result = null;
   try {
     const response = await fetch(
-      `${domain}/api/method/lms.lms.v2_api.get_course_details_v2?course_id=${id}`
+      `${domain}/api/method/lms.lms.v2_api.get_course_details_v2?course_id=${encodeURIComponent(id)}`
     );
     const data = await response.json();
-    course.value = data.message || null;
+    // strict: 2xx and an id naming the requested course (as the backend resolves it), else "not found"
+    result = acceptCourseResponse(response.ok, data, id);
   } catch (error) {
     console.error("Error fetching course details:", error);
+  }
+  if (!requests.isCurrent(token)) return; // a newer navigation has started
+  course.value = result;
+  loading.value = false;
+  // An address typed in other capitals (e.g. /courses/FAA-Private-Pilot-License) works as it does
+  // today; the address is then shown with the backend's canonical id (no new history entry and no
+  // second request: see the watcher). Enrolment uses course.value.id, the canonical id.
+  if (result && result.id !== id) {
+    router.replace({ name: route.name, params: { ...route.params, id: result.id }, query: route.query, hash: route.hash });
   }
 }
 
@@ -570,6 +578,10 @@ async function handleEnrollment() {
     return;
   }
   enrolling.value = true;
+  // Navigation guard only (r3 finding 1): remember which course this request is for. If the
+  // visitor has moved to another course by the time the response arrives, do nothing.
+  // The enrolment API call itself is unchanged.
+  const requestedId = course.value.id;
   try {
     const res = await fetch(
       `/api/method/lms.lms.v2_api.enroll_in_course?course_id=${course.value.id}`,
@@ -582,6 +594,7 @@ async function handleEnrollment() {
       }
     );
     const data = await res.json();
+    if (!stillOnCourse(route.params.id, course.value, requestedId)) return;
     if (data.message && data.message.status === "success") {
       course.value.is_enrolled = true;
       if (course.value.current_lesson) {
@@ -606,34 +619,41 @@ async function handleEnrollment() {
   }
 }
 
+// Same image policy as the catalogue (data/imagePolicy.js): self-hosted images only.
+// Anything else (missing, another site, protocol-relative, other schemes) uses the self-hosted hero image.
+const FALLBACK_IMAGE = "/files/hero_banner_v6.jpg";
+
 function handleImagePath(path) {
-  if (!path)
-    return "https://images.unsplash.com/photo-1464039397811-476f652a343b?q=80&w=2068&auto=format&fit=crop";
-  if (path.startsWith("http")) return path;
-  if (path.startsWith("/images/")) return `/assets/lms_frontend/frontend${path}`;
-  return path;
+  return safeImagePath(path) || FALLBACK_IMAGE;
 }
 
 function onImgError(e) {
-  e.target.src =
-    "https://images.unsplash.com/photo-1464039397811-476f652a343b?q=80&w=2068&auto=format&fit=crop";
+  // try the self-hosted fallback once; if that fails too, hide the image
+  if (!e.target.dataset.fallback) {
+    e.target.dataset.fallback = "1";
+    e.target.src = FALLBACK_IMAGE;
+  } else {
+    e.target.style.display = "none";
+  }
 }
 
-function onAvatarError(e) {
-  e.target.src = "https://placehold.co/200x200/312e81/ffffff?text=Instructor";
+// A failed instructor photo is hidden (no external placeholder); reset for each course.
+const avatarFailed = ref(false);
+
+function onAvatarError() {
+  avatarFailed.value = true;
 }
 
 watch(
   () => route.params.id,
-  (newId) => {
-    if (newId) fetchCourseDetails();
+  (newId, oldId) => {
+    // skip the refetch when the address only changed to the canonical id of the course on screen
+    if (newId && newId !== oldId && newId !== course.value?.id) fetchCourseDetails();
   }
 );
 
-onMounted(async () => {
-  loading.value = true;
-  await fetchCourseDetails();
-  loading.value = false;
+onMounted(() => {
+  fetchCourseDetails();
 });
 </script>
 
