@@ -13,6 +13,7 @@
 					:image="program.right_image"
 					:icon="program.icon"
 					:reverse="index % 2 !== 0"
+					:link="courseLink(program)"
 				/>
 			</div>
 		</div>
@@ -31,4 +32,18 @@ const props = defineProps({
 		default: () => ({}),
 	},
 });
+
+// Homepage programme cards link to their existing course pages.
+// A CMS-provided internal `link` on the card wins; otherwise the card title is
+// matched exactly against the published courses below. Unknown titles get no link.
+const COURSE_ROUTES_BY_CARD_TITLE = {
+	"FAA Private Pilot Ground School (Online Theory)": "/courses/faa-private-pilot-license",
+	"Flight Attendant / Cabin Crew Course": "/courses/flight-attendant-cabin-crew-course",
+};
+
+function courseLink(program) {
+	const cmsLink = typeof program?.link === "string" ? program.link.trim() : "";
+	if (cmsLink.startsWith("/") && !cmsLink.startsWith("//")) return cmsLink;
+	return COURSE_ROUTES_BY_CARD_TITLE[(program?.sub_title || "").trim()] || "";
+}
 </script>
