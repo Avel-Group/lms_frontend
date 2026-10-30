@@ -539,7 +539,7 @@ async function fetchCourseDetails() {
       `${domain}/api/method/lms.lms.v2_api.get_course_details_v2?course_id=${encodeURIComponent(id)}`
     );
     const data = await response.json();
-    // strict: 2xx and an id that is exactly the requested course, else "not found"
+    // strict: 2xx and an id naming the requested course (as the backend resolves it), else "not found"
     result = acceptCourseResponse(response.ok, data, id);
   } catch (error) {
     console.error("Error fetching course details:", error);
@@ -547,6 +547,12 @@ async function fetchCourseDetails() {
   if (!requests.isCurrent(token)) return; // a newer navigation has started
   course.value = result;
   loading.value = false;
+  // An address typed in other capitals (e.g. /courses/FAA-Private-Pilot-License) works as it does
+  // today; the address is then shown with the backend's canonical id (no new history entry and no
+  // second request: see the watcher). Enrolment uses course.value.id, the canonical id.
+  if (result && result.id !== id) {
+    router.replace({ name: route.name, params: { ...route.params, id: result.id }, query: route.query, hash: route.hash });
+  }
 }
 
 async function handleEnrollment() {
@@ -640,8 +646,12 @@ function resetImageState() {
 watch(
   () => route.params.id,
   (newId, oldId) => {
-    resetImageState();
-    if (newId && newId !== oldId) fetchCourseDetails();
+    // skip the refetch (and keep the image state) when the address only changed to the
+    // canonical id of the course on screen
+    if (newId && newId !== oldId && newId !== course.value?.id) {
+      resetImageState();
+      fetchCourseDetails();
+    }
   }
 );
 
