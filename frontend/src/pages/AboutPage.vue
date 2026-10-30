@@ -19,7 +19,7 @@
         <div class="flex flex-col lg:flex-row items-center gap-12 lg:gap-16">
           <div class="flex-1">
             <div class="rounded-2xl overflow-hidden bg-brown-100 aspect-[4/3]">
-              <img :src='check_Image(value.left_image)' alt="Course Flick team" class="w-full h-full object-cover" @error="onImgError" />
+              <img v-if="failedImage !== value.left_image" :src='check_Image(value.left_image)' alt="Person writing notes beside a laptop" class="w-full h-full object-cover" loading="lazy" decoding="async" @error="onImgError(value.left_image)" />
             </div>
           </div>
           <div class="flex-1 space-y-5">
@@ -152,8 +152,10 @@ import { onMounted, ref } from 'vue'
 let pageContent = ref([])
 
 
-function onImgError(e) {
-  e.target.src = 'https://placehold.co/600x450/F5E6D8/5B2C0E?text=Course+Flick'
+// A failed Our Story image is hidden and the tinted panel stays (no external placeholder).
+const failedImage = ref(null)
+function onImgError(src) {
+  failedImage.value = src
 }
 
 

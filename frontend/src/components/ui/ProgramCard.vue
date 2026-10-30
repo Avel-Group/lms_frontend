@@ -1,14 +1,9 @@
 <template>
-	<!-- With a link the whole card is one native link (keyboard: Tab + Enter); without one it stays a plain div -->
-	<component
-		:is="cardLink ? 'router-link' : 'div'"
-		v-bind="cardLink ? { to: cardLink, 'aria-label': `${title}: view course` } : {}"
+	<!-- Informational row only: it does not link to any course (courses are reached through Explore Courses). -->
+	<div
 		:class="[
 			'flex flex-col md:flex-row items-center gap-8 py-10',
 			reverse ? 'md:flex-row-reverse' : '',
-			cardLink
-				? 'rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-brown-700 focus-visible:ring-offset-4'
-				: '',
 		]"
 	>
 		<div class="flex-1 space-y-4">
@@ -23,20 +18,22 @@
 		<div class="flex-1 w-full">
 			<div class="rounded-2xl overflow-hidden bg-brown-100 aspect-[16/10]">
 				<img
+					v-if="!imageFailed"
 					:src="check_Image(image)"
-					:alt="title"
+					:alt="imageAlt"
 					class="w-full h-full object-cover"
+					loading="lazy"
+					decoding="async"
 					@error="onImgError"
 				/>
 			</div>
 		</div>
-	</component>
+	</div>
 </template>
 
 <script setup>
-import { computed } from "vue";
+import { computed, ref, watch } from "vue";
 import { check_Image } from "../../data/helper";
-import { courseLinkForCardTitle, isCoursePath } from "../../data/homeCourseLinks.js";
 
 const props = defineProps({
 	title: { type: String, required: true },
@@ -44,17 +41,30 @@ const props = defineProps({
 	image: { type: String, required: true },
 	icon: { type: String, required: true },
 	reverse: { type: Boolean, default: false },
-	// Optional course page override (/courses/<slug>); otherwise looked up by title.
-	link: { type: String, default: "" },
+	// Text alternative for the photograph (CMS field image_alt). It describes the photo, not the row title.
+	alt: { type: String, default: "" },
 });
 
-// Only /courses/<slug> paths are used (an invalid link prop is ignored); when there is
-// no valid link the card stays a plain, non-clickable div.
-const cardLink = computed(() =>
-	isCoursePath(props.link) ? props.link : courseLinkForCardTitle(props.title)
-);
+// Descriptions of the approved, self-hosted lifestyle photographs, used when the CMS row has no image_alt.
+const ALT_BY_FILE = {
+	"cf_lifestyle_1_young_woman_laptop.jpg": "Young woman studying at a laptop",
+	"cf_lifestyle_2_man_notes_laptop.jpg": "Man studying at a laptop",
+};
+const imageAlt = computed(() => {
+	if (props.alt) return props.alt;
+	const file = String(props.image || "").split("/").pop();
+	return ALT_BY_FILE[file] || "";
+});
 
-function onImgError(e) {
-	e.target.src = "https://placehold.co/800x500/F5E6D8/5B2C0E?text=Aviation+Program";
+// If the image fails to load it is hidden and the tinted panel stays (no external placeholder).
+const imageFailed = ref(false);
+watch(
+	() => props.image,
+	() => {
+		imageFailed.value = false;
+	}
+);
+function onImgError() {
+	imageFailed.value = true;
 }
 </script>
