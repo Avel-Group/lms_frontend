@@ -5,7 +5,7 @@ import { useAuth } from '../composables/useAuth.js'
 const routes = [
   { path: '/', name: 'Home', component: HomePage },
   { path: '/home',name: 'HomeAlias', component: HomePage },
-  { path: '/v2', name: 'HomeV2', component: () => import('../pages/HomePageV2.vue') },
+  { path: '/v2', redirect: '/' }, // old design draft retired (t91u item 8)
 
   // App Routes (Authenticated)
   {
@@ -34,11 +34,11 @@ const routes = [
     meta: { requiresAuth: true }
   },
 
-  { path: '/v3', name: 'HomeV3', component: () => import('../pages/HomePageV3.vue') },
-  { path: '/v4', name: 'HomeV4', component: () => import('../pages/HomePageV4.vue') },
-  { path: '/v5', name: 'HomeV5', component: () => import('../pages/HomePageV5.vue') },
-  { path: '/courses-static', name: 'CoursesStatic', component: () => import('../pages/CoursesPage.vue') },
-  { path: '/courses-static/:id', name: 'CourseDetailStatic', component: () => import('../pages/CourseDetailPage.vue') },
+  { path: '/v3', redirect: '/' }, // old design draft retired (t91u item 8)
+  { path: '/v4', redirect: '/' }, // old design draft retired (t91u item 8)
+  { path: '/v5', redirect: '/' }, // old design draft retired (t91u item 8)
+  { path: '/courses-static', redirect: '/courses' }, // static demo catalogue retired (t91u item 8)
+  { path: '/courses-static/:id', redirect: '/courses' }, // static demo course page ("lifetime access", demo ratings) retired
   { path: '/courses', name: 'Courses', component: () => import('../pages/CoursesPageV2.vue') },
   { path: '/courses/:id', name: 'CourseDetail', component: () => import('../pages/CourseDetailPageV2.vue') },
 

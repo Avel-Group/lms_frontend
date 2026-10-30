@@ -2,7 +2,7 @@
   <div v-if="loading" class="min-h-screen flex items-center justify-center bg-gray-50/50">
     <div class="flex flex-col items-center gap-4">
       <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-slate-900"></div>
-      <p class="text-xs font-bold text-slate-400 uppercase tracking-widest animate-pulse">
+      <p class="text-xs font-bold text-slate-600 uppercase tracking-widest animate-pulse">
         Loading Course Data...
       </p>
     </div>
@@ -14,7 +14,7 @@
   >
     <div class="max-w-md space-y-6">
       <div
-        class="w-20 h-20 mx-auto rounded-3xl bg-slate-50 flex items-center justify-center text-slate-400"
+        class="w-20 h-20 mx-auto rounded-3xl bg-slate-50 flex items-center justify-center text-slate-500"
       >
         <AlertCircleIcon class="w-8 h-8" />
       </div>
@@ -39,16 +39,16 @@
     >
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center">
         <nav
-          class="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.15em] text-gray-400"
+          class="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.15em] text-gray-600"
         >
           <router-link to="/" class="hover:text-slate-900 transition-colors"
             >Home</router-link
           >
-          <ChevronRightIcon class="w-3 h-3 text-gray-300" />
+          <ChevronRightIcon class="w-3 h-3 text-gray-500" />
           <router-link to="/courses" class="hover:text-slate-900 transition-colors"
             >Courses</router-link
           >
-          <ChevronRightIcon class="w-3 h-3 text-gray-300" />
+          <ChevronRightIcon class="w-3 h-3 text-gray-500" />
           <span class="text-slate-900 truncate max-w-[200px]">{{ course.title }}</span>
         </nav>
       </div>
@@ -99,7 +99,7 @@
                 </div>
                 <div>
                   <p
-                    class="text-[9px] font-black uppercase tracking-widest text-slate-400"
+                    class="text-[9px] font-black uppercase tracking-widest text-slate-600"
                   >
                     Duration
                   </p>
@@ -116,7 +116,7 @@
                 </div>
                 <div>
                   <p
-                    class="text-[9px] font-black uppercase tracking-widest text-slate-400"
+                    class="text-[9px] font-black uppercase tracking-widest text-slate-600"
                   >
                     Content
                   </p>
@@ -153,7 +153,7 @@
                   {{ (course.course_price || 0).toLocaleString() }}</span
                 >
                 <span
-                  class="text-[9px] font-black uppercase tracking-widest text-slate-400"
+                  class="text-[9px] font-black uppercase tracking-widest text-slate-600"
                   >Total Fee</span
                 >
               </div>
@@ -169,7 +169,9 @@
               class="aspect-[4/5] rounded-2xl overflow-hidden shadow-2xl shadow-slate-200/50 relative bg-slate-100"
             >
               <img
-                :src="handleImagePath(course.image)"
+                v-if="!heroFallbackFailed"
+                :src="heroImageFailed ? FALLBACK_IMAGE : handleImagePath(course.image)"
+                alt=""
                 class="w-full h-full object-cover transform transition-transform duration-1000 group-hover:scale-105"
                 @error="onImgError"
               />
@@ -177,16 +179,7 @@
                 class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"
               ></div>
 
-              <!-- Floating Verification Badge via Absolute Position -->
-              <div
-                class="absolute bottom-6 right-6 bg-white/95 backdrop-blur px-5 py-3 rounded-xl shadow-lg border border-white/20 flex items-center gap-2"
-              >
-                <div class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
-                <span
-                  class="text-[10px] font-black uppercase tracking-widest text-slate-900"
-                  >Verified Program</span
-                >
-              </div>
+              <!-- "Verified Program" badge removed: there is no verification scheme behind it (t91u item 8) -->
             </div>
           </div>
         </div>
@@ -215,7 +208,7 @@
               <h3 class="text-2xl font-display font-bold text-slate-900">
                 Training Modules
               </h3>
-              <span class="text-xs font-bold text-slate-400"
+              <span class="text-xs font-bold text-slate-600"
                 >{{ course.curriculum.length }} Total Modules</span
               >
             </div>
@@ -235,7 +228,7 @@
                   class="p-6 cursor-pointer flex items-start gap-6 select-none"
                 >
                   <div
-                    class="w-12 h-12 rounded-xl bg-gray-50 flex items-center justify-center text-sm font-black text-gray-400 transition-colors group-hover:bg-[#800000] group-hover:text-white"
+                    class="w-12 h-12 rounded-xl bg-gray-50 flex items-center justify-center text-sm font-black text-gray-600 transition-colors group-hover:bg-[#800000] group-hover:text-white"
                     :class="{ 'bg-slate-900 text-white': mod.isOpen }"
                   >
                     {{ (i + 1).toString().padStart(2, "0") }}
@@ -261,7 +254,7 @@
                     </div>
                   </div>
                   <div
-                    class="w-10 h-10 rounded-full border border-gray-100 flex items-center justify-center text-gray-300 transition-transform duration-300 group-hover:border-[#800000]/20 group-hover:text-[#800000]"
+                    class="w-10 h-10 rounded-full border border-gray-100 flex items-center justify-center text-gray-500 transition-transform duration-300 group-hover:border-[#800000]/20 group-hover:text-[#800000]"
                     :class="{ 'rotate-90 bg-slate-50 text-slate-900': mod.isOpen }"
                   >
                     <ChevronRightIcon class="w-5 h-5" />
@@ -280,7 +273,7 @@
                       class="flex items-center gap-4 text-sm group/lesson cursor-pointer hover:bg-white p-3 rounded-xl transition-colors"
                     >
                       <div
-                        class="w-8 h-8 rounded-lg bg-white border border-gray-100 flex items-center justify-center text-slate-400 group-hover/lesson:text-[#800000] group-hover/lesson:border-[#800000]/20 shadow-sm"
+                        class="w-8 h-8 rounded-lg bg-white border border-gray-100 flex items-center justify-center text-slate-500 group-hover/lesson:text-[#800000] group-hover/lesson:border-[#800000]/20 shadow-sm"
                       >
                         <PlayCircleIcon v-if="lesson.is_video" class="w-4 h-4" />
                         <AlertCircleIcon v-else-if="lesson.is_quiz" class="w-4 h-4" />
@@ -290,13 +283,13 @@
                         class="flex-1 font-medium text-slate-600 group-hover/lesson:text-slate-900"
                         >{{ lesson.title }}</span
                       >
-                      <span class="text-xs font-bold text-slate-400">{{
+                      <span class="text-xs font-bold text-slate-600">{{
                         lesson.duration
                       }}</span>
                     </li>
                     <li
                       v-if="!mod.lessons || mod.lessons.length === 0"
-                      class="text-xs text-slate-400 italic pl-14"
+                      class="text-xs text-slate-600 italic pl-14"
                     >
                       No lessons available for preview.
                     </li>
@@ -316,8 +309,9 @@
                 class="w-16 h-16 rounded-2xl overflow-hidden shrink-0 bg-slate-100 ring-4 ring-white shadow-lg"
               >
                 <img
-                  v-if="!avatarFailed"
-                  :src="handleImagePath(course.custom_instructor_image)"
+                  v-if="!avatarFailed && safeImagePath(course.custom_instructor_image)"
+                  :src="safeImagePath(course.custom_instructor_image)"
+                  alt=""
                   class="w-full h-full object-cover"
                   @error="onAvatarError"
                 />
@@ -329,11 +323,12 @@
                 <h4 class="text-2xl font-display font-bold text-slate-900">
                   {{ course.custom_instructor_name }}
                 </h4>
-                <p class="text-slate-500 text-base leading-relaxed max-w-2xl">
-                  {{
-                    course.custom_instructor_quote ||
-                    "Expert instruction for safe and compliant aviation operations."
-                  }}
+                <!-- no approved text: the quote is omitted (r3 finding 4) -->
+                <p
+                  v-if="course.custom_instructor_quote"
+                  class="text-slate-500 text-base leading-relaxed max-w-2xl"
+                >
+                  {{ course.custom_instructor_quote }}
                 </p>
               </div>
             </div>
@@ -344,7 +339,7 @@
         <aside class="lg:col-span-4 space-y-10">
           <!-- Quick Summary Card -->
           <div class="bg-white rounded-2xl p-8 border border-gray-100 shadow-sm">
-            <h4 class="text-xs font-black uppercase tracking-widest text-slate-400 mb-6">
+            <h4 class="text-xs font-black uppercase tracking-widest text-slate-600 mb-6">
               Program Highlights
             </h4>
             <ul class="space-y-4">
@@ -355,7 +350,7 @@
                   <CheckIcon class="w-3.5 h-3.5 text-emerald-600" />
                 </div>
                 <span class="text-sm font-bold text-slate-600"
-                  >Globally Recognized Certification</span
+                  >Certificate of Graduation on completion</span
                 >
               </li>
               <li class="flex items-start gap-4">
@@ -385,7 +380,7 @@
                   <CheckIcon class="w-3.5 h-3.5 text-emerald-600" />
                 </div>
                 <span class="text-sm font-bold text-slate-600"
-                  >Lifetime Material Access</span
+                  >12 months' course access from enrolment</span
                 >
               </li>
             </ul>
@@ -423,7 +418,7 @@
             class="bg-gray-50 rounded-2xl p-8 border border-gray-100"
             v-if="prereqs.length"
           >
-            <h4 class="text-xs font-black uppercase tracking-widest text-slate-400 mb-6">
+            <h4 class="text-xs font-black uppercase tracking-widest text-slate-600 mb-6">
               Prerequisites
             </h4>
             <ul class="space-y-4">
@@ -432,7 +427,7 @@
                 :key="i"
                 class="flex gap-3 text-sm text-slate-500 leading-relaxed"
               >
-                <span class="text-slate-300 shrink-0">&rarr;</span>
+                <span class="text-slate-500 shrink-0">&rarr;</span>
                 {{ pre }}
               </li>
             </ul>
@@ -619,36 +614,44 @@ async function handleEnrollment() {
   }
 }
 
-// Same image policy as the catalogue (data/imagePolicy.js): self-hosted images only.
-// Anything else (missing, another site, protocol-relative, other schemes) uses the self-hosted hero image.
+// Only self-hosted images are shown (shared policy, data/imagePolicy.js, also used by the
+// catalogue). Anything else falls back to the self-hosted hero image.
 const FALLBACK_IMAGE = "/files/hero_banner_v6.jpg";
 
 function handleImagePath(path) {
   return safeImagePath(path) || FALLBACK_IMAGE;
 }
 
-function onImgError(e) {
-  // try the self-hosted fallback once; if that fails too, hide the image
-  if (!e.target.dataset.fallback) {
-    e.target.dataset.fallback = "1";
-    e.target.src = FALLBACK_IMAGE;
-  } else {
-    e.target.style.display = "none";
-  }
-}
-
-// A failed instructor photo is hidden (no external placeholder); reset for each course.
+// Image failures are tracked in reactive state (not on the DOM element), so they reset
+// when the visitor moves to another course and the new course's own image is tried.
+const heroImageFailed = ref(false);
+const heroFallbackFailed = ref(false);
 const avatarFailed = ref(false);
 
+function onImgError() {
+  if (!heroImageFailed.value) heroImageFailed.value = true;
+  else heroFallbackFailed.value = true; // the fallback failed too: hide the image, keep the tinted panel
+}
+
 function onAvatarError() {
-  avatarFailed.value = true;
+  avatarFailed.value = true; // hide a failed instructor photo (no external placeholder)
+}
+
+function resetImageState() {
+  heroImageFailed.value = false;
+  heroFallbackFailed.value = false;
+  avatarFailed.value = false;
 }
 
 watch(
   () => route.params.id,
   (newId, oldId) => {
-    // skip the refetch when the address only changed to the canonical id of the course on screen
-    if (newId && newId !== oldId && newId !== course.value?.id) fetchCourseDetails();
+    // skip the refetch (and keep the image state) when the address only changed to the
+    // canonical id of the course on screen
+    if (newId && newId !== oldId && newId !== course.value?.id) {
+      resetImageState();
+      fetchCourseDetails();
+    }
   }
 );
 
