@@ -484,7 +484,7 @@ import {
 import { useAuth } from "../composables/useAuth";
 import CourseCard from "../components/ui/CourseCard.vue";
 import { domain } from "../data/helper";
-import { createLatestGuard } from "../data/imagePolicy";
+import { createLatestGuard, safeImagePath } from "../data/imagePolicy";
 
 const route = useRoute();
 const router = useRouter();
@@ -605,17 +605,22 @@ async function handleEnrollment() {
   }
 }
 
+// Same image policy as the catalogue (data/imagePolicy.js): self-hosted images only.
+// Anything else (missing, another site, protocol-relative, other schemes) uses the self-hosted hero image.
+const FALLBACK_IMAGE = "/files/hero_banner_v6.jpg";
+
 function handleImagePath(path) {
-  if (!path)
-    return "https://images.unsplash.com/photo-1464039397811-476f652a343b?q=80&w=2068&auto=format&fit=crop";
-  if (path.startsWith("http")) return path;
-  if (path.startsWith("/images/")) return `/assets/lms_frontend/frontend${path}`;
-  return path;
+  return safeImagePath(path) || FALLBACK_IMAGE;
 }
 
 function onImgError(e) {
-  e.target.src =
-    "https://images.unsplash.com/photo-1464039397811-476f652a343b?q=80&w=2068&auto=format&fit=crop";
+  // try the self-hosted fallback once; if that fails too, hide the image
+  if (!e.target.dataset.fallback) {
+    e.target.dataset.fallback = "1";
+    e.target.src = FALLBACK_IMAGE;
+  } else {
+    e.target.style.display = "none";
+  }
 }
 
 function onAvatarError(e) {
