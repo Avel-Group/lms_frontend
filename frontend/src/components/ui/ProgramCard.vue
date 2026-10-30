@@ -36,7 +36,7 @@
 <script setup>
 import { computed } from "vue";
 import { check_Image } from "../../data/helper";
-import { courseLinkForCardTitle } from "../../data/homeCourseLinks.js";
+import { courseLinkForCardTitle, isCoursePath } from "../../data/homeCourseLinks.js";
 
 const props = defineProps({
 	title: { type: String, required: true },
@@ -44,16 +44,15 @@ const props = defineProps({
 	image: { type: String, required: true },
 	icon: { type: String, required: true },
 	reverse: { type: Boolean, default: false },
-	// Optional internal route override (e.g. /courses/<slug>); otherwise looked up by title.
+	// Optional course page override (/courses/<slug>); otherwise looked up by title.
 	link: { type: String, default: "" },
 });
 
-// Internal routes only; when empty the card stays a plain, non-clickable div.
-const cardLink = computed(() => {
-	const explicit = (props.link || "").trim();
-	if (explicit.startsWith("/") && !explicit.startsWith("//")) return explicit;
-	return courseLinkForCardTitle(props.title);
-});
+// Only /courses/<slug> paths are used (an invalid link prop is ignored); when there is
+// no valid link the card stays a plain, non-clickable div.
+const cardLink = computed(() =>
+	isCoursePath(props.link) ? props.link : courseLinkForCardTitle(props.title)
+);
 
 function onImgError(e) {
 	e.target.src = "https://placehold.co/800x500/F5E6D8/5B2C0E?text=Aviation+Program";
