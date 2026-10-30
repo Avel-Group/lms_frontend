@@ -65,9 +65,10 @@
             <div class="space-y-6">
               <div class="flex flex-wrap items-center gap-3">
                 <span
+                  v-if="course.category_label"
                   class="px-4 py-1.5 rounded-full bg-slate-50 border border-gray-100 text-[10px] font-black uppercase tracking-[0.2em] text-slate-600"
                 >
-                  {{ course.category_label || "Aviation" }}
+                  {{ course.category_label }}
                 </span>
                 <span
                   v-if="course.is_enrolled"
@@ -478,6 +479,7 @@ import {
 import { useAuth } from "../composables/useAuth";
 import CourseCard from "../components/ui/CourseCard.vue";
 import { domain } from "../data/helper";
+import { createLatestGuard, safeImagePath } from "../data/imagePolicy";
 
 const route = useRoute();
 const router = useRouter();
@@ -514,19 +516,34 @@ function parseListHtml(html) {
 const outcomes = computed(() => parseListHtml(course.value?.custom_learning_outcomes));
 const prereqs = computed(() => parseListHtml(course.value?.custom_prerequisites));
 
+// Route changes between courses: the previous course is cleared and the loading state is shown
+// at once (so its details and enrol button cannot be used for the new URL), and a response is
+// applied only if it belongs to the newest request (a slow earlier response is discarded).
+const requests = createLatestGuard();
+
 async function fetchCourseDetails() {
   const id = route.params.id;
-  if (!id) return;
-
+  const token = requests.next();
+  course.value = null;
+  loading.value = true;
+  if (!id) {
+    loading.value = false;
+    return;
+  }
+  let result = null;
   try {
     const response = await fetch(
-      `${domain}/api/method/lms.lms.v2_api.get_course_details_v2?course_id=${id}`
+      `${domain}/api/method/lms.lms.v2_api.get_course_details_v2?course_id=${encodeURIComponent(id)}`
     );
     const data = await response.json();
-    course.value = data.message || null;
+    result = data.message || null;
+    if (result && result.id && result.id !== id) result = null; // response for another course
   } catch (error) {
     console.error("Error fetching course details:", error);
   }
+  if (!requests.isCurrent(token)) return; // a newer navigation has started
+  course.value = result;
+  loading.value = false;
 }
 
 async function handleEnrollment() {
@@ -583,24 +600,9 @@ async function handleEnrollment() {
   }
 }
 
-// Only self-hosted images are shown. Absolute http(s) URLs to other sites are never loaded;
-// the self-hosted fallback is used instead.
+// Only self-hosted images are shown (shared policy, data/imagePolicy.js, also used by the
+// catalogue). Anything else falls back to the self-hosted hero image.
 const FALLBACK_IMAGE = "/files/hero_banner_v6.jpg";
-
-function safeImagePath(path) {
-  if (!path) return "";
-  if (/^https?:\/\//i.test(path)) {
-    try {
-      const u = new URL(path);
-      if (u.origin === window.location.origin) return u.pathname + u.search;
-    } catch (e) {
-      /* not a valid URL */
-    }
-    return "";
-  }
-  if (path.startsWith("/images/")) return `/assets/lms_frontend/frontend${path}`;
-  return path;
-}
 
 function handleImagePath(path) {
   return safeImagePath(path) || FALLBACK_IMAGE;
@@ -629,16 +631,14 @@ function resetImageState() {
 
 watch(
   () => route.params.id,
-  (newId) => {
+  (newId, oldId) => {
     resetImageState();
-    if (newId) fetchCourseDetails();
+    if (newId && newId !== oldId) fetchCourseDetails();
   }
 );
 
-onMounted(async () => {
-  loading.value = true;
-  await fetchCourseDetails();
-  loading.value = false;
+onMounted(() => {
+  fetchCourseDetails();
 });
 </script>
 
