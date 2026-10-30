@@ -23,10 +23,24 @@
           <!-- Category dropdown (restored; it was replaced by subject chips in PR #6, 2b61fa7a).
                Lists "All Courses" plus only the categories that have at least one listed course.
                Selecting a category updates ?category= so Back/Forward and links keep working. -->
-          <div class="course-category-dropdown">
+          <!-- Focus returns to this wrapper when the list is closed from the keyboard (see onCategoryClose),
+               so keyboard users still see where they are; Enter, Space or Down reopens the list. -->
+          <div
+            ref="categoryWrap"
+            class="course-category-dropdown w-fit rounded-[5px] focus:outline-none focus-visible:ring-2 focus-visible:ring-brown-700 focus-visible:ring-offset-2"
+            role="group"
+            aria-labelledby="course-category-label"
+            tabindex="-1"
+            @keydown.capture="lastCategoryKey = Date.now()"
+            @keydown.self.enter.prevent="categorySelect?.activate()"
+            @keydown.self.space.prevent="categorySelect?.activate()"
+            @keydown.self.down.prevent="categorySelect?.activate()"
+            @keydown.self.tab.exact="focusAfterCategory"
+          >
             <label id="course-category-label" for="course-category-select" class="sr-only">Course category</label>
             <!-- vue-multiselect sets the search box's aria-label to name + "-searchbox", so name gives it a readable name -->
             <Multiselect
+              ref="categorySelect"
               id="course-category-select"
               name="Course category"
               aria-labelledby="course-category-label"
@@ -40,6 +54,7 @@
               selectLabel=""
               selectedLabel=""
               deselectLabel=""
+              @close="onCategoryClose"
             />
           </div>
 
@@ -158,7 +173,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch } from "vue";
+import { ref, computed, onMounted, watch, nextTick } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import SectionBadge from "../components/ui/SectionBadge.vue";
 import CourseCard from "../components/ui/CourseCard.vue";
@@ -233,6 +248,31 @@ function selectCategory(cat) {
 }
 
 watch(() => route.query.category, syncCategoryFromRoute);
+
+// vue-multiselect blurs itself whenever its list closes, so after Escape or Enter keyboard focus
+// would drop to the page body. When the close follows a key press inside the dropdown, move focus
+// to the wrapper, which shows a visible focus ring while the list is closed.
+const categoryWrap = ref(null);
+const categorySelect = ref(null);
+const lastCategoryKey = ref(0);
+function onCategoryClose() {
+  if (Date.now() - lastCategoryKey.value > 1000) return; // closed by mouse or by Tab: leave focus alone
+  nextTick(() => {
+    if (document.activeElement === document.body) categoryWrap.value?.focus();
+  });
+}
+// Tab from the focused wrapper would otherwise step into the dropdown's own input and reopen it.
+function focusAfterCategory(event) {
+  const wrap = categoryWrap.value;
+  const tabbables = [...document.querySelectorAll('a[href], button, input, select, textarea, [tabindex="0"]')].filter(
+    (el) => !el.disabled && el.offsetParent !== null && !wrap.contains(el)
+  );
+  const next = tabbables.find((el) => wrap.compareDocumentPosition(el) & Node.DOCUMENT_POSITION_FOLLOWING);
+  if (next) {
+    event.preventDefault();
+    next.focus();
+  }
+}
 
 async function fetchCourses() {
   // debugger
