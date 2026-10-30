@@ -15,7 +15,7 @@
 						<div
 							class="w-10 h-10 rounded-xl bg-brown-100 flex items-center justify-center flex-shrink-0 text-brown-700"
 						>
-							<img :src="check_Image(point.icon)" />
+							<img :src="check_Image(point.icon)" alt="" />
 						</div>
 						<div>
 							<h4 class="font-semibold text-gray-900 mb-1">{{ point.sub_title }}</h4>
@@ -27,16 +27,19 @@
 				</div>
 
 				<!-- Certificate image -->
-				<div v-if="!hideCertImage" class="flex-1">
+				<figure v-if="!hideCertImage" class="flex-1 w-full max-w-md lg:max-w-none mx-auto">
 					<div class="rounded-2xl overflow-hidden bg-white shadow-lg p-4">
 						<img
-							:src="usingPlaceholder ? PLACEHOLDER_SRC : certSrc"
-							:alt="usingPlaceholder ? PLACEHOLDER_ALT : CERT_ALT"
+							:src="certSrc"
+							:alt="CERT_ALT"
 							class="w-full rounded-lg"
+							loading="lazy"
+							decoding="async"
 							@error="onImgError"
 						/>
 					</div>
-				</div>
+					<figcaption class="mt-3 text-center text-sm text-gray-600">{{ CERT_CAPTION }}</figcaption>
+				</figure>
 			</div>
 		</div>
 	</section>
@@ -57,28 +60,19 @@ const props = defineProps({
 });
 
 const CERT_ALT = "Sample CourseFlick Certificate of Graduation with fictional details";
-const PLACEHOLDER_ALT = "Sample Certificate of Graduation placeholder image";
-const PLACEHOLDER_SRC =
-	"https://placehold.co/600x400/FFF8F0/5B2C0E?text=Sample+Certificate+of+Graduation";
+// Visible caption so the image is clearly an illustration, not a real learner's certificate.
+const CERT_CAPTION = "Sample certificate for illustration only. The name and details shown are fictional.";
 
-// Image-error state for the current CMS image URL. Whenever that URL changes, the state is
-// cleared, so every URL (including one shown before) starts again with one attempt.
-// The placeholder is tried at most once per URL; if it also fails the image is hidden
-// (no retry loop).
+// If the CMS image fails to load, the image and its caption are hidden (no external
+// fallback image, no retry loop). The state is cleared whenever the CMS image URL changes.
 const certSrc = computed(() => check_Image(props.data.right_image));
-const placeholderFor = ref(null);
 const hiddenFor = ref(null);
-const usingPlaceholder = computed(() => placeholderFor.value === certSrc.value);
 const hideCertImage = computed(() => hiddenFor.value === certSrc.value);
 watch(certSrc, () => {
-	placeholderFor.value = null;
 	hiddenFor.value = null;
 });
 
 function onImgError() {
-	if (!usingPlaceholder.value) placeholderFor.value = certSrc.value;
-	else hiddenFor.value = certSrc.value;
+	hiddenFor.value = certSrc.value;
 }
-
-console.log(props.data, "eeeeeeeeeee");
 </script>

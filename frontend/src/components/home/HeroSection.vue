@@ -170,7 +170,7 @@ const fallbackSlides = [
 		subtitle: "Learning That Clicks",
 		description:
 			"Discover flexible online courses designed to help you build knowledge, develop skills and take your next step with confidence.",
-		image: "/assets/lms_frontend/images/hero-flight.png",
+		image: "/files/hero_banner_v6.jpg",
 	},
 ];
 

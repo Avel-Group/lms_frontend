@@ -23,9 +23,12 @@
 		<div class="flex-1 w-full">
 			<div class="rounded-2xl overflow-hidden bg-brown-100 aspect-[16/10]">
 				<img
+					v-if="!imageFailed"
 					:src="check_Image(image)"
 					:alt="title"
 					class="w-full h-full object-cover"
+					loading="lazy"
+					decoding="async"
 					@error="onImgError"
 				/>
 			</div>
@@ -34,7 +37,7 @@
 </template>
 
 <script setup>
-import { computed } from "vue";
+import { computed, ref, watch } from "vue";
 import { check_Image } from "../../data/helper";
 import { courseLinkForCardTitle, isCoursePath } from "../../data/homeCourseLinks.js";
 
@@ -54,7 +57,15 @@ const cardLink = computed(() =>
 	isCoursePath(props.link) ? props.link : courseLinkForCardTitle(props.title)
 );
 
-function onImgError(e) {
-	e.target.src = "https://placehold.co/800x500/F5E6D8/5B2C0E?text=CourseFlick";
+// If the image fails to load it is hidden and the tinted panel stays (no external placeholder).
+const imageFailed = ref(false);
+watch(
+	() => props.image,
+	() => {
+		imageFailed.value = false;
+	}
+);
+function onImgError() {
+	imageFailed.value = true;
 }
 </script>
