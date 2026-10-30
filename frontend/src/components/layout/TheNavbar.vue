@@ -121,7 +121,7 @@
         </div>
 
         <!-- Mobile hamburger -->
-        <button class="md:hidden p-2 text-white" @click="mobileMenuOpen = !mobileMenuOpen">
+        <button type="button" class="md:hidden p-2 text-white" :aria-label="mobileMenuOpen ? 'Close menu' : 'Open menu'" :aria-expanded="mobileMenuOpen ? 'true' : 'false'" @click="mobileMenuOpen = !mobileMenuOpen">
           <svg v-if="!mobileMenuOpen" class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2"
             viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
