@@ -44,6 +44,7 @@
               id="course-category-select"
               name="Course category"
               aria-labelledby="course-category-label"
+              :aria-controls="categoryOpen ? CATEGORY_LISTBOX_ID : null"
               :model-value="activeCategory"
               @update:model-value="(cat) => selectCategory(cat || ALL)"
               :options="visibleCategories"
@@ -54,6 +55,7 @@
               selectLabel=""
               selectedLabel=""
               deselectLabel=""
+              @open="onCategoryOpen"
               @close="onCategoryClose"
             />
           </div>
@@ -256,10 +258,31 @@ const categoryWrap = ref(null);
 const categorySelect = ref(null);
 const lastCategoryKey = ref(0);
 function onCategoryClose() {
+  categoryOpen.value = false;
+  syncCategoryAria();
   if (Date.now() - lastCategoryKey.value > 1000) return; // closed by mouse or by Tab: leave focus alone
   nextTick(() => {
     if (document.activeElement === document.body) categoryWrap.value?.focus();
   });
+}
+// vue-multiselect 3.4.0 points its search box's aria-controls (and, after arrow keys, its
+// aria-activedescendant) at a listbox that exists only while the list is open, and gives the open
+// combobox no aria-controls (axe-core: aria-valid-attr-value, aria-required-attr). Keep these
+// references valid: set aria-controls while open, remove both from the search box while closed.
+const CATEGORY_LISTBOX_ID = "listbox-course-category-select";
+const categoryOpen = ref(false);
+function syncCategoryAria() {
+  const input = categoryWrap.value?.querySelector(".multiselect__input");
+  if (!input) return;
+  if (categoryOpen.value) input.setAttribute("aria-controls", CATEGORY_LISTBOX_ID);
+  else {
+    input.removeAttribute("aria-controls");
+    input.removeAttribute("aria-activedescendant");
+  }
+}
+function onCategoryOpen() {
+  categoryOpen.value = true;
+  syncCategoryAria();
 }
 // Tab from the focused wrapper would otherwise step into the dropdown's own input and reopen it.
 function focusAfterCategory(event) {
@@ -307,6 +330,7 @@ onMounted(async () => {
   // Deep link: /courses?category=<slug> opens with that subject selected.
   syncCategoryFromRoute();
   loading.value = false;
+  syncCategoryAria();
 });
 </script>
 
