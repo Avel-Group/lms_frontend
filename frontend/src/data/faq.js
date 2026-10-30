@@ -19,12 +19,12 @@ export const faqs = [
   {
     question: "How are assessments completed?",
     answer:
-      "Quizzes and assessments help you check your understanding as you work through a course. To complete a course, you need to meet the course requirements and pass the final examination. Each course page explains what that course includes.",
+      "Quizzes and assessments help you check your understanding as you work through a course. To complete a course, you need to complete the course requirements, including the final examination. Each course page explains what that course includes.",
   },
   {
     question: "How do I receive my certificate?",
     answer:
-      "When you complete your course and pass your final examination, your CourseFlick Certificate of Graduation is generated automatically. It recognises your learning achievement with CourseFlick and is separate from any licence or regulatory qualification.",
+      "When you complete your course requirements, including the final examination, your CourseFlick Certificate of Graduation is generated automatically. It recognises your learning achievement with CourseFlick and is separate from any licence or regulatory qualification.",
   },
   {
     question: "How can I get help?",

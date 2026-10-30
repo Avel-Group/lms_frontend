@@ -5,7 +5,7 @@ export const certificationPoints = [
     icon: 'briefcase',
     title: 'Your Certificate of Graduation',
     description:
-      'Complete your course and pass the final examination, and your Certificate of Graduation is generated automatically.',
+      'When you complete your course requirements, including the final examination, your Certificate of Graduation is generated automatically.',
   },
   {
     icon: 'award',
