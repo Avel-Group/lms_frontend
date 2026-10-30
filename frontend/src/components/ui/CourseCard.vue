@@ -11,7 +11,7 @@
         class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
         @error="onImgError"
       />
-      <span class="absolute top-3 left-3 px-2.5 py-1 text-xs font-semibold rounded-full" :class="levelClass">
+      <span v-if="level" class="absolute top-3 left-3 px-2.5 py-1 text-xs font-semibold rounded-full" :class="levelClass">
         {{ level }}
       </span>
     </div>
@@ -22,18 +22,19 @@
       <p class="text-sm text-gray-500 leading-relaxed mb-4 line-clamp-3 flex-1">{{ description }}</p>
 
       <!-- Meta row -->
-      <div class="flex items-center gap-4 text-xs text-gray-400 mb-4">
-        <span class="flex items-center gap-1">
+      <!-- Only show details that are actually filled in on the course record -->
+      <div v-if="showDuration || showLessons" class="flex items-center gap-4 text-xs text-gray-400 mb-4">
+        <span v-if="showDuration" class="flex items-center gap-1">
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
           </svg>
           {{ duration }}
         </span>
-        <span class="flex items-center gap-1">
+        <span v-if="showLessons" class="flex items-center gap-1">
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25" />
           </svg>
-          {{ lessons }} chapter
+          {{ lessons }} {{ lessons === 1 ? "chapter" : "chapters" }}
         </span>
         <!-- <span class="flex items-center gap-1">
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -45,12 +46,14 @@
 
       <!-- Footer -->
       <div class="flex items-center justify-between pt-4 border-t border-gray-100">
-        <div class="flex items-center gap-1">
+        <!-- Rating hidden: no reviews are shown to support it (Decision D12) -->
+        <div v-if="SHOW_RATING" class="flex items-center gap-1">
           <svg class="w-4 h-4 text-gold-500" fill="currentColor" viewBox="0 0 20 20">
             <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
           </svg>
           <span class="text-sm font-semibold text-gray-900">{{ rating }}</span>
         </div>
+        <span v-else></span>
         <span class="text-sm font-semibold text-brown-700 group-hover:text-brown-800 flex items-center gap-1 transition-colors">
           View Course
           <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -73,13 +76,22 @@ const props = defineProps({
   title: { type: String, required: true },
   description: { type: String, required: true },
   image: { type: String, required: true },
-  duration: { type: String, required: true },
-  lessons: { type: Number, required: true },
-  level: { type: String, required: true },
-  rating: { type: Number, required: true },
-  students: { type: Number, required: true },
+  duration: { type: String, default: '' },
+  lessons: { type: Number, default: 0 },
+  level: { type: String, default: '' },
+  rating: { type: Number, default: null },
+  students: { type: Number, default: 0 },
   detailRoute: { type: String, default: 'CourseDetail' }
 })
+
+const SHOW_RATING = false
+
+// A bare number such as "30" has no unit, so it is not shown; text such as "35 hours" is.
+const showDuration = computed(() => {
+  const d = (props.duration || '').trim()
+  return d !== '' && !/^\d+(\.\d+)?$/.test(d)
+})
+const showLessons = computed(() => Number(props.lessons) > 0)
 
 function goToDetail() {
   router.push({ name: props.detailRoute, params: { id: props.id } })
@@ -95,6 +107,6 @@ const levelClass = computed(() => {
 })
 
 function onImgError(e) {
-  e.target.src = 'https://placehold.co/600x375/F5E6D8/5B2C0E?text=Aviation+Course'
+  e.target.src = 'https://placehold.co/600x375/F5E6D8/5B2C0E?text=CourseFlick'
 }
 </script>

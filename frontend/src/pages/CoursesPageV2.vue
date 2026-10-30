@@ -8,7 +8,7 @@
           Explore Our <span class="font-display italic text-brown-700">Courses</span>
         </h1>
         <p class="text-gray-500 max-w-2xl mx-auto text-lg">
-          Browse our comprehensive aviation training programs.
+          Browse our courses by subject and find the right course for you.
         </p>
       </div>
     </section>
@@ -20,33 +20,24 @@
         <div
           class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 mb-10"
         >
-          <!-- Category Tabs -->
-          <div class="flex flex-wrap gap-2">
-            <!-- <button
-              v-for="cat in categories"
+          <!-- Subject categories: visible chips; only subjects with at least one listed course -->
+          <div class="flex flex-wrap items-center gap-2" role="group" aria-label="Subjects">
+            <span class="text-sm font-medium text-gray-500 mr-1">Subjects:</span>
+            <button
+              v-for="cat in visibleCategories"
               :key="cat.slug"
-              @click="activeCategory = cat.slug"
+              type="button"
+              @click="selectCategory(cat)"
+              :aria-pressed="activeCategory?.slug === cat.slug"
               :class="[
-                'px-4 py-2 text-sm font-medium rounded-full transition-all duration-200',
-                activeCategory === cat.slug
+                'px-4 py-2 text-sm font-medium rounded-full transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-brown-700 focus-visible:ring-offset-2',
+                activeCategory?.slug === cat.slug
                   ? 'bg-brown-700 text-white shadow-sm'
                   : 'bg-brown-50 text-gray-600 hover:bg-brown-100 hover:text-brown-700',
               ]"
             >
-              {{ cat.label }}
-            </button> -->
-
-            <Multiselect
-              v-model="activeCategory"
-              :options="categories"
-              label="label"
-              track-by="slug"
-              placeholder="Select category"
-              class="!w-[250px]"
-              selectLabel=""
-              selectedLabel=""
-              deselectLabel=""
-            />
+              {{ cat.label }} ({{ countFor(cat.slug) }})
+            </button>
           </div>
 
           <!-- Search -->
@@ -150,7 +141,7 @@
           </p>
           <button
             @click="
-              activeCategory = categories.find(c => c.slug === 'all');
+              selectCategory(categories.find((c) => c.slug === 'all'));
               searchQuery = '';
             "
             class="text-sm font-semibold text-brown-700 hover:text-brown-800 transition-colors"
@@ -165,14 +156,13 @@
 
 <script setup>
 import { ref, computed, onMounted } from "vue";
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 import SectionBadge from "../components/ui/SectionBadge.vue";
 import CourseCard from "../components/ui/CourseCard.vue";
 import { domain } from "../data/helper";
-import Multiselect from "vue-multiselect";
-import "vue-multiselect/dist/vue-multiselect.min.css";
 
 const router = useRouter();
+const route = useRoute();
 const courses = ref([]);
 const categories = ref([{ slug: "all", label: "All Courses" }]);
 
@@ -208,6 +198,27 @@ const filteredCourses = computed(() => {
   return result;
 });
 
+// Number of listed courses in a category ("all" counts every listed course).
+function countFor(slug) {
+  if (slug === "all") return courses.value.length;
+  return courses.value.filter((c) => c.category === slug).length;
+}
+
+// Show "All Courses" plus only the subjects that currently have at least one listed course.
+const visibleCategories = computed(() =>
+  categories.value.filter((c) => c.slug === "all" || countFor(c.slug) > 0)
+);
+
+// Selecting a subject updates ?category= so a subject can be linked to directly.
+function selectCategory(cat) {
+  if (!cat) return;
+  activeCategory.value = cat;
+  const query = { ...route.query };
+  if (cat.slug === "all") delete query.category;
+  else query.category = cat.slug;
+  router.replace({ query });
+}
+
 async function fetchCourses() {
   // debugger
   try {
@@ -230,7 +241,7 @@ async function fetchCategories() {
 }
 
 function handleImagePath(path) {
-  if (!path) return "https://placehold.co/600x400/F5E6D8/5B2C0E?text=Aviation";
+  if (!path) return "https://placehold.co/600x400/F5E6D8/5B2C0E?text=CourseFlick";
   if (path.startsWith("http")) return path;
   if (path.startsWith("/images")) return `/assets/lms_frontend/frontend${path}`;
   return path;
@@ -239,15 +250,10 @@ function handleImagePath(path) {
 onMounted(async () => {
   loading.value = true;
   await Promise.all([fetchCourses(), fetchCategories()]);
+  // Optional deep link: /courses?category=<slug> opens with that subject selected.
+  const wanted = categories.value.find((c) => c.slug === route.query.category);
+  if (wanted) activeCategory.value = wanted;
   loading.value = false;
 });
 </script>
 
-<style>
-
-.multiselect__option--highlight {
-  --tw-bg-opacity: 1;
-    background-color: rgb(59 31 11 / var(--tw-bg-opacity, 1)) !important;
-  color: white;
-}
-</style>
