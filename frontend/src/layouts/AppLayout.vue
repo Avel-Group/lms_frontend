@@ -9,7 +9,7 @@
         <!-- Logo Area -->
         <div class="h-20 flex items-center px-6 border-b border-white/10">
           <router-link to="/portal/student-dashboard" class="flex items-center gap-3 group">
-            <img src="/images/main-logo.png" alt="Aviation LMS" class="h-12 w-auto brightness-0 invert opacity-90 group-hover:opacity-100 transition-opacity" />
+            <img src="/images/main-logo.png" alt="CourseFlick – Learning That Clicks" class="h-12 w-auto brightness-0 invert opacity-90 group-hover:opacity-100 transition-opacity" />
           </router-link>
         </div>
 

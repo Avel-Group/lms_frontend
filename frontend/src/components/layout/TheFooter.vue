@@ -4,7 +4,7 @@
       <!-- Logo -->
       <div class="flex justify-center mb-8">
         <router-link to="/">
-          <img src="/images/main-logo.png" alt="Aviation LMS" class="h-24 w-auto" @error="onLogoError" />
+          <img src="/images/main-logo.png" alt="CourseFlick – Learning That Clicks" class="h-24 w-auto" @error="onLogoError" />
         </router-link>
       </div>
 
@@ -45,6 +45,6 @@ import { footerLinks } from '../../data/navigation.js'
 
 function onLogoError(e) {
   e.target.style.display = 'none'
-  e.target.parentElement.innerHTML = '<span class="text-lg font-bold text-brown-700">Aviation LMS</span>'
+  e.target.parentElement.innerHTML = '<span class="text-lg font-bold text-brown-700">CourseFlick</span>'
 }
 </script>

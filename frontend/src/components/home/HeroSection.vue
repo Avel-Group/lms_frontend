@@ -69,7 +69,7 @@
 
 							<div class="flex flex-wrap gap-4 pt-4">
 								<BaseButton to="/courses" variant="solid-white" size="lg">
-									Explore Programs
+									Explore Courses
 								</BaseButton>
 								<BaseButton to="/contact" variant="outline-white" size="lg">
 									Enquire Now
@@ -158,14 +158,18 @@ const slidesLoading = ref(true);
 
 const slides = ref([]);
 
-// Shown only if the slideshow API fails or returns nothing; mirrors the approved live hero copy.
+// Label shown above the first slide's heading (the slideshow API has no tag field).
+const FIRST_SLIDE_TAG = "Online learning";
+
+// Shown only if the slideshow API fails or returns nothing; mirrors the Redesign Proposal v2 hero copy.
 const fallbackSlides = [
 	{
 		id: "fallback-1",
-		tag: "Featured",
-		title: "Aviation theory, online",
+		tag: FIRST_SLIDE_TAG,
+		title: "Your Learning Journey Starts Here",
 		subtitle: "Learning That Clicks",
-		description: "Self-paced aviation theory courses, through to a Certificate of Graduation.",
+		description:
+			"Discover flexible online courses designed to help you build knowledge, develop skills and take your next step with confidence.",
 		image: "/assets/lms_frontend/images/hero-flight.png",
 	},
 ];
@@ -198,7 +202,7 @@ async function fetchSlides() {
 
 				return {
 					id: item.name || `slide-${index}`,
-					tag: index === 0 ? "Featured" : "Highlight",
+					tag: index === 0 ? FIRST_SLIDE_TAG : "Highlight",
 					title: title,
 					subtitle: subtitle,
 					description: item.description || "",

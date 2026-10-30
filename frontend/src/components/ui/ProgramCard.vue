@@ -55,6 +55,6 @@ const cardLink = computed(() =>
 );
 
 function onImgError(e) {
-	e.target.src = "https://placehold.co/800x500/F5E6D8/5B2C0E?text=Aviation+Program";
+	e.target.src = "https://placehold.co/800x500/F5E6D8/5B2C0E?text=CourseFlick";
 }
 </script>

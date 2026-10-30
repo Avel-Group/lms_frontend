@@ -30,7 +30,7 @@
         <!-- Center logo -->
         <div class="flex-shrink-0 flex items-center justify-center">
           <router-link to="/" class="flex items-center">
-            <img src="/images/main-logo.png" alt="Aviation LMS" class="h-24 w-auto" @error="onLogoError" />
+            <img src="/images/main-logo.png" alt="CourseFlick – Learning That Clicks" class="h-24 w-auto" @error="onLogoError" />
           </router-link>
         </div>
 
@@ -203,6 +203,6 @@ onMounted(() => {
 
 function onLogoError(e) {
   e.target.style.display = 'none'
-  e.target.parentElement.innerHTML = '<span class="text-lg font-bold text-gold-500">Aviation LMS</span>'
+  e.target.parentElement.innerHTML = '<span class="text-lg font-bold text-gold-500">CourseFlick</span>'
 }
 </script>
