@@ -492,7 +492,6 @@ async function fetchCourseDetails() {
   const id = route.params.id;
   const token = requests.next();
   course.value = null;
-  avatarFailed.value = false;
   loading.value = true;
   if (!id) {
     loading.value = false;
@@ -591,21 +590,15 @@ function handleImagePath(path) {
 // when the visitor moves to another course and the new course's own image is tried.
 const heroImageFailed = ref(false);
 const heroFallbackFailed = ref(false);
-const avatarFailed = ref(false);
 
 function onImgError() {
   if (!heroImageFailed.value) heroImageFailed.value = true;
   else heroFallbackFailed.value = true; // the fallback failed too: hide the image, keep the tinted panel
 }
 
-function onAvatarError() {
-  avatarFailed.value = true; // hide a failed instructor photo (no external placeholder)
-}
-
 function resetImageState() {
   heroImageFailed.value = false;
   heroFallbackFailed.value = false;
-  avatarFailed.value = false;
 }
 
 watch(
