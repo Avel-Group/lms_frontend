@@ -316,6 +316,7 @@
                 class="w-16 h-16 rounded-2xl overflow-hidden shrink-0 bg-slate-100 ring-4 ring-white shadow-lg"
               >
                 <img
+                  v-if="!avatarFailed"
                   :src="handleImagePath(course.custom_instructor_image)"
                   class="w-full h-full object-cover"
                   @error="onAvatarError"
@@ -485,6 +486,7 @@ import { useAuth } from "../composables/useAuth";
 import CourseCard from "../components/ui/CourseCard.vue";
 import { domain } from "../data/helper";
 import { createLatestGuard, safeImagePath } from "../data/imagePolicy";
+import { acceptCourseResponse, stillOnCourse } from "../data/courseResponse";
 
 const route = useRoute();
 const router = useRouter();
@@ -530,6 +532,7 @@ async function fetchCourseDetails() {
   const id = route.params.id;
   const token = requests.next();
   course.value = null;
+  avatarFailed.value = false;
   loading.value = true;
   if (!id) {
     loading.value = false;
@@ -541,8 +544,8 @@ async function fetchCourseDetails() {
       `${domain}/api/method/lms.lms.v2_api.get_course_details_v2?course_id=${encodeURIComponent(id)}`
     );
     const data = await response.json();
-    result = data.message || null;
-    if (result && result.id && result.id !== id) result = null; // response for another course
+    // strict: 2xx and an id that is exactly the requested course, else "not found"
+    result = acceptCourseResponse(response.ok, data, id);
   } catch (error) {
     console.error("Error fetching course details:", error);
   }
@@ -569,6 +572,10 @@ async function handleEnrollment() {
     return;
   }
   enrolling.value = true;
+  // Navigation guard only (r3 finding 1): remember which course this request is for. If the
+  // visitor has moved to another course by the time the response arrives, do nothing.
+  // The enrolment API call itself is unchanged.
+  const requestedId = course.value.id;
   try {
     const res = await fetch(
       `/api/method/lms.lms.v2_api.enroll_in_course?course_id=${course.value.id}`,
@@ -581,6 +588,7 @@ async function handleEnrollment() {
       }
     );
     const data = await res.json();
+    if (!stillOnCourse(route.params.id, course.value, requestedId)) return;
     if (data.message && data.message.status === "success") {
       course.value.is_enrolled = true;
       if (course.value.current_lesson) {
@@ -623,8 +631,11 @@ function onImgError(e) {
   }
 }
 
-function onAvatarError(e) {
-  e.target.src = "https://placehold.co/200x200/312e81/ffffff?text=Instructor";
+// A failed instructor photo is hidden (no external placeholder); reset for each course.
+const avatarFailed = ref(false);
+
+function onAvatarError() {
+  avatarFailed.value = true;
 }
 
 watch(
