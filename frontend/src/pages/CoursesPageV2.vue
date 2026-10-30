@@ -20,24 +20,27 @@
         <div
           class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 mb-10"
         >
-          <!-- Subject categories: visible chips; only subjects with at least one listed course -->
-          <div class="flex flex-wrap items-center gap-2" role="group" aria-label="Subjects">
-            <span class="text-sm font-medium text-gray-500 mr-1">Subjects:</span>
-            <button
-              v-for="cat in visibleCategories"
-              :key="cat.slug"
-              type="button"
-              @click="selectCategory(cat)"
-              :aria-pressed="activeCategory?.slug === cat.slug"
-              :class="[
-                'px-4 py-2 text-sm font-medium rounded-full transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-brown-700 focus-visible:ring-offset-2',
-                activeCategory?.slug === cat.slug
-                  ? 'bg-brown-700 text-white shadow-sm'
-                  : 'bg-brown-50 text-gray-600 hover:bg-brown-100 hover:text-brown-700',
-              ]"
-            >
-              {{ cat.label }} ({{ countFor(cat.slug) }})
-            </button>
+          <!-- Category dropdown (restored; it was replaced by subject chips in PR #6, 2b61fa7a).
+               Lists "All Courses" plus only the categories that have at least one listed course.
+               Selecting a category updates ?category= so Back/Forward and links keep working. -->
+          <div>
+            <label id="course-category-label" for="course-category-select" class="sr-only">Course category</label>
+            <!-- vue-multiselect sets the search box's aria-label to name + "-searchbox", so name gives it a readable name -->
+            <Multiselect
+              id="course-category-select"
+              name="Course category"
+              aria-labelledby="course-category-label"
+              :model-value="activeCategory"
+              @update:model-value="(cat) => selectCategory(cat || ALL)"
+              :options="visibleCategories"
+              label="label"
+              track-by="slug"
+              placeholder="Select category"
+              class="!w-[250px]"
+              selectLabel=""
+              selectedLabel=""
+              deselectLabel=""
+            />
           </div>
 
           <!-- Search -->
@@ -161,6 +164,8 @@ import SectionBadge from "../components/ui/SectionBadge.vue";
 import CourseCard from "../components/ui/CourseCard.vue";
 import { domain } from "../data/helper";
 import { safeImagePath, categoryFromQuery } from "../data/imagePolicy";
+import Multiselect from "vue-multiselect";
+import "vue-multiselect/dist/vue-multiselect.min.css";
 
 const router = useRouter();
 const route = useRoute();
@@ -212,7 +217,7 @@ const visibleCategories = computed(() =>
 
 // The selected subject is driven by ?category= in the URL. Selecting a subject adds a history
 // entry (router.push), so browser Back/Forward steps through the filters, and the watcher below
-// keeps the chips in step with the URL while the page stays mounted.
+// keeps the dropdown in step with the URL while the page stays mounted.
 const ALL = { slug: "all", label: "All Courses" };
 function syncCategoryFromRoute() {
   activeCategory.value = categoryFromQuery(categories.value, route.query) || ALL;
@@ -265,3 +270,10 @@ onMounted(async () => {
 });
 </script>
 
+<style>
+.multiselect__option--highlight {
+  --tw-bg-opacity: 1;
+  background-color: rgb(59 31 11 / var(--tw-bg-opacity, 1)) !important;
+  color: white;
+}
+</style>
