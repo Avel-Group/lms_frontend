@@ -31,7 +31,7 @@
 					<div class="rounded-2xl overflow-hidden bg-white shadow-lg p-4">
 						<img
 							:src="check_Image(data.right_image)"
-							alt="Certificate of Completion"
+							alt="Sample CourseFlick Certificate of Graduation with fictional details"
 							class="w-full rounded-lg"
 							@error="onImgError"
 						/>
@@ -49,7 +49,8 @@ import { certificationPoints } from "../../data/certificationPoints.js";
 import { check_Image } from "../../data/helper.js";
 
 function onImgError(e) {
-	e.target.src = "https://placehold.co/600x400/FFF8F0/5B2C0E?text=Certificate+of+Completion";
+	e.target.src =
+		"https://placehold.co/600x400/FFF8F0/5B2C0E?text=Sample+Certificate+of+Graduation";
 }
 
 const props = defineProps({

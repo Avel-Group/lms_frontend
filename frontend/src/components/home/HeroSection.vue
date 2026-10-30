@@ -82,7 +82,8 @@
 		</div>
 
 		<!-- Slider Navigation & Indicators -->
-		<div class="absolute bottom-8 left-0 right-0 z-20" v-if="slides.length > 0">
+		<!-- Only shown when there is more than one slide: with a single slide the dots and arrows do nothing -->
+		<div class="absolute bottom-8 left-0 right-0 z-20" v-if="slides.length > 1">
 			<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
 				<!-- Dots -->
 				<div class="flex items-center gap-3">
