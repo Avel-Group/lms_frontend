@@ -1,7 +1,7 @@
 <template>
 	<section class="py-20 bg-brown-50">
 		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-			<SectionBadge label="Certification" />
+			<SectionBadge label="Certificate" />
 			<SectionHeading :prefix="data.title" :highlight="data.span_title" />
 
 			<div class="flex flex-col lg:flex-row items-center gap-12 mt-12">
