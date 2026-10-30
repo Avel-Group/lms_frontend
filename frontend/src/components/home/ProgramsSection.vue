@@ -1,7 +1,6 @@
 <template>
 	<section class="py-20 bg-white">
 		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-			<SectionBadge label="Global Standard" />
 			<SectionHeading :prefix="data.title" :highlight="data.span_title" />
 
 			<div class="mt-12 divide-y divide-gray-100">
@@ -20,7 +19,6 @@
 </template>
 
 <script setup>
-import SectionBadge from "../ui/SectionBadge.vue";
 import SectionHeading from "../ui/SectionHeading.vue";
 import ProgramCard from "../ui/ProgramCard.vue";
 import { programs } from "../../data/programs.js";
