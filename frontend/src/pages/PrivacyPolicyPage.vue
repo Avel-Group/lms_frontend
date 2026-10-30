@@ -110,7 +110,7 @@ const sections = [
         'Right to data portability (receiving your data in a structured format)',
         'Right to withdraw consent at any time where processing is based on consent',
       ],
-      'To exercise any of these rights, please contact us at privacy@courseflick.com. We will respond to your request within 30 days.',
+      'To exercise any of these rights, please contact us at support@courseflick.com. We will respond to your request within 30 days.',
     ],
   },
   {
@@ -134,7 +134,7 @@ const sections = [
   {
     title: '11. Contact Us',
     paragraphs: [
-      'If you have questions or concerns about this Privacy Policy or our data practices, please contact us at privacy@courseflick.com or through our Contact page.',
+      'If you have questions or concerns about this Privacy Policy or our data practices, please contact us at support@courseflick.com or through our Contact page.',
     ],
   },
 ]
