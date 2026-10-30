@@ -155,11 +155,12 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, watch } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import SectionBadge from "../components/ui/SectionBadge.vue";
 import CourseCard from "../components/ui/CourseCard.vue";
 import { domain } from "../data/helper";
+import { safeImagePath, categoryFromQuery } from "../data/imagePolicy";
 
 const router = useRouter();
 const route = useRoute();
@@ -209,15 +210,24 @@ const visibleCategories = computed(() =>
   categories.value.filter((c) => c.slug === "all" || countFor(c.slug) > 0)
 );
 
-// Selecting a subject updates ?category= so a subject can be linked to directly.
+// The selected subject is driven by ?category= in the URL. Selecting a subject adds a history
+// entry (router.push), so browser Back/Forward steps through the filters, and the watcher below
+// keeps the chips in step with the URL while the page stays mounted.
+const ALL = { slug: "all", label: "All Courses" };
+function syncCategoryFromRoute() {
+  activeCategory.value = categoryFromQuery(categories.value, route.query) || ALL;
+}
+
 function selectCategory(cat) {
   if (!cat) return;
-  activeCategory.value = cat;
   const query = { ...route.query };
   if (cat.slug === "all") delete query.category;
   else query.category = cat.slug;
-  router.replace({ query });
+  if ((query.category || "") === (route.query.category || "")) return;
+  router.push({ query });
 }
+
+watch(() => route.query.category, syncCategoryFromRoute);
 
 async function fetchCourses() {
   // debugger
@@ -240,20 +250,17 @@ async function fetchCategories() {
   }
 }
 
+// Same image policy as the course page (data/imagePolicy.js): self-hosted images only.
+// No image, or an image on another site: the card shows its tinted panel.
 function handleImagePath(path) {
-  // No image on the course record: the card shows its tinted panel (no external image).
-  if (!path) return "";
-  if (path.startsWith("http")) return path;
-  if (path.startsWith("/images")) return `/assets/lms_frontend/frontend${path}`;
-  return path;
+  return safeImagePath(path);
 }
 
 onMounted(async () => {
   loading.value = true;
   await Promise.all([fetchCourses(), fetchCategories()]);
-  // Optional deep link: /courses?category=<slug> opens with that subject selected.
-  const wanted = categories.value.find((c) => c.slug === route.query.category);
-  if (wanted) activeCategory.value = wanted;
+  // Deep link: /courses?category=<slug> opens with that subject selected.
+  syncCategoryFromRoute();
   loading.value = false;
 });
 </script>
