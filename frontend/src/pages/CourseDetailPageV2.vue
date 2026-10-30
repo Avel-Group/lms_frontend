@@ -125,23 +125,7 @@
                   </p>
                 </div>
               </div>
-              <div class="flex items-center gap-3">
-                <div
-                  class="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-yellow-500"
-                >
-                  <StarIcon class="w-5 h-5 fill-current" />
-                </div>
-                <div>
-                  <p
-                    class="text-[9px] font-black uppercase tracking-widest text-slate-400"
-                  >
-                    Rating
-                  </p>
-                  <p class="text-sm font-bold text-slate-900">
-                    {{ course.custom_rating || "4.9" }} / 5.0
-                  </p>
-                </div>
-              </div>
+              <!-- No rating is shown: there are no published reviews behind it (Decision D12, confirmed in t91u item 7) -->
             </div>
 
             <!-- CTA Actions -->
@@ -475,7 +459,6 @@
             :duration="rel.custom_duration_text || '4 Weeks'"
             :lessons="rel.custom_lessons_count || 12"
             :level="rel.custom_level || 'Professional'"
-            :rating="rel.custom_rating || 5.0"
             :students="rel.custom_students_count || 150"
             detail-route="CourseDetail"
           />
@@ -493,7 +476,6 @@ import {
   BookOpenIcon,
   ChevronRightIcon,
   CheckIcon,
-  StarIcon,
   ArrowRightIcon,
   AlertCircleIcon,
   PlayCircleIcon,

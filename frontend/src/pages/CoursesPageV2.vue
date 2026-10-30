@@ -111,7 +111,6 @@
             :duration="course.custom_duration_text"
             :lessons="course.custom_lessons_count"
             :level="course.custom_level"
-            :rating="course.custom_rating"
             :students="course.custom_students_count"
             detail-route="CourseDetail"
           />

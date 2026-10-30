@@ -51,14 +51,8 @@
 
       <!-- Footer -->
       <div class="mt-auto flex items-center justify-between pt-4 border-t border-gray-100">
-        <!-- Rating shown as on the live site. Hiding it is Decision D12 (proposed, not approved): see branch content/hide-card-rating-D12 -->
-        <div v-if="SHOW_RATING && rating != null" class="flex items-center gap-1">
-          <svg class="w-4 h-4 text-gold-500" fill="currentColor" viewBox="0 0 20 20">
-            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-          </svg>
-          <span class="text-sm font-semibold text-gray-900">{{ rating }}</span>
-        </div>
-        <span v-else></span>
+        <!-- No rating is shown: there are no published reviews behind it (Decision D12, confirmed in t91u item 7) -->
+        <span></span>
         <span class="text-sm font-semibold text-brown-700 group-hover:text-brown-800 flex items-center gap-1 transition-colors">
           View Course
           <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -82,12 +76,9 @@ const props = defineProps({
   duration: { type: String, default: '' },
   lessons: { type: Number, default: 0 },
   level: { type: String, default: '' },
-  rating: { type: Number, default: null },
   students: { type: Number, default: 0 },
   detailRoute: { type: String, default: 'CourseDetail' }
 })
-
-const SHOW_RATING = true
 
 // A bare number such as "30" has no unit, so it is not shown; text such as "35 hours" is.
 const showDuration = computed(() => {
