@@ -1,20 +1,22 @@
+// Fallback text only (the live section reads its points from the CMS). Kept accurate:
+// no employment, recognition or verification claims (t91u item 8).
 export const certificationPoints = [
   {
     icon: 'briefcase',
-    title: 'Job-Aligned Skill Training',
+    title: 'Your Certificate of Graduation',
     description:
-      'Courses built around the skills employers actually look for in candidates.',
+      'Complete your course and pass the final examination, and your Certificate of Graduation is generated automatically.',
   },
   {
     icon: 'award',
-    title: 'Industry-Relevant Expertise',
+    title: 'Clear, structured lessons',
     description:
-      'Curriculum built or guided by aviation professionals with real-world aviation experience.',
+      'Each course is organised into chapters and lessons, with quizzes and assessments to check your understanding.',
   },
   {
     icon: 'certificate',
-    title: 'Verifiable Certification',
+    title: 'Keep a copy for your records',
     description:
-      'Earn recognized credentials on completion that you can share with employers, on LinkedIn, and in applications.',
+      'Save your certificate and keep a copy to mark what you have achieved. It is separate from any licence or regulatory qualification.',
   },
 ]

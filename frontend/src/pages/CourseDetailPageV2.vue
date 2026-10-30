@@ -168,7 +168,9 @@
               class="aspect-[4/5] rounded-2xl overflow-hidden shadow-2xl shadow-slate-200/50 relative bg-slate-100"
             >
               <img
-                :src="handleImagePath(course.image)"
+                v-if="!heroFallbackFailed"
+                :src="heroImageFailed ? FALLBACK_IMAGE : handleImagePath(course.image)"
+                alt=""
                 class="w-full h-full object-cover transform transition-transform duration-1000 group-hover:scale-105"
                 @error="onImgError"
               />
@@ -176,16 +178,7 @@
                 class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"
               ></div>
 
-              <!-- Floating Verification Badge via Absolute Position -->
-              <div
-                class="absolute bottom-6 right-6 bg-white/95 backdrop-blur px-5 py-3 rounded-xl shadow-lg border border-white/20 flex items-center gap-2"
-              >
-                <div class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
-                <span
-                  class="text-[10px] font-black uppercase tracking-widest text-slate-900"
-                  >Verified Program</span
-                >
-              </div>
+              <!-- "Verified Program" badge removed: there is no verification scheme behind it (t91u item 8) -->
             </div>
           </div>
         </div>
@@ -315,7 +308,9 @@
                 class="w-16 h-16 rounded-2xl overflow-hidden shrink-0 bg-slate-100 ring-4 ring-white shadow-lg"
               >
                 <img
-                  :src="handleImagePath(course.custom_instructor_image)"
+                  v-if="!avatarFailed && safeImagePath(course.custom_instructor_image)"
+                  :src="safeImagePath(course.custom_instructor_image)"
+                  alt=""
                   class="w-full h-full object-cover"
                   @error="onAvatarError"
                 />
@@ -353,7 +348,7 @@
                   <CheckIcon class="w-3.5 h-3.5 text-emerald-600" />
                 </div>
                 <span class="text-sm font-bold text-slate-600"
-                  >Globally Recognized Certification</span
+                  >Certificate of Graduation on completion</span
                 >
               </li>
               <li class="flex items-start gap-4">
@@ -383,7 +378,7 @@
                   <CheckIcon class="w-3.5 h-3.5 text-emerald-600" />
                 </div>
                 <span class="text-sm font-bold text-slate-600"
-                  >Lifetime Material Access</span
+                  >12 months' course access from enrolment</span
                 >
               </li>
             </ul>
@@ -588,26 +583,54 @@ async function handleEnrollment() {
   }
 }
 
-function handleImagePath(path) {
-  if (!path)
-    return "https://images.unsplash.com/photo-1464039397811-476f652a343b?q=80&w=2068&auto=format&fit=crop";
-  if (path.startsWith("http")) return path;
+// Only self-hosted images are shown. Absolute http(s) URLs to other sites are never loaded;
+// the self-hosted fallback is used instead.
+const FALLBACK_IMAGE = "/files/hero_banner_v6.jpg";
+
+function safeImagePath(path) {
+  if (!path) return "";
+  if (/^https?:\/\//i.test(path)) {
+    try {
+      const u = new URL(path);
+      if (u.origin === window.location.origin) return u.pathname + u.search;
+    } catch (e) {
+      /* not a valid URL */
+    }
+    return "";
+  }
   if (path.startsWith("/images/")) return `/assets/lms_frontend/frontend${path}`;
   return path;
 }
 
-function onImgError(e) {
-  e.target.src =
-    "https://images.unsplash.com/photo-1464039397811-476f652a343b?q=80&w=2068&auto=format&fit=crop";
+function handleImagePath(path) {
+  return safeImagePath(path) || FALLBACK_IMAGE;
 }
 
-function onAvatarError(e) {
-  e.target.src = "https://placehold.co/200x200/312e81/ffffff?text=Instructor";
+// Image failures are tracked in reactive state (not on the DOM element), so they reset
+// when the visitor moves to another course and the new course's own image is tried.
+const heroImageFailed = ref(false);
+const heroFallbackFailed = ref(false);
+const avatarFailed = ref(false);
+
+function onImgError() {
+  if (!heroImageFailed.value) heroImageFailed.value = true;
+  else heroFallbackFailed.value = true; // the fallback failed too: hide the image, keep the tinted panel
+}
+
+function onAvatarError() {
+  avatarFailed.value = true; // hide a failed instructor photo (no external placeholder)
+}
+
+function resetImageState() {
+  heroImageFailed.value = false;
+  heroFallbackFailed.value = false;
+  avatarFailed.value = false;
 }
 
 watch(
   () => route.params.id,
   (newId) => {
+    resetImageState();
     if (newId) fetchCourseDetails();
   }
 );

@@ -1,27 +1,34 @@
+// Fallback text only (the live FAQ section reads its questions from the CMS FAQ records).
+// Same wording as the six FAQ records in the homepage CMS change set (t91u item 8).
 export const faqs = [
   {
-    question: 'How did this training help your aviation career?',
+    question: "How do I enrol on a course?",
     answer:
-      'Our training programs are designed to provide practical, industry-aligned skills that directly prepare you for real aviation roles. Many graduates have gone on to secure positions with major airlines and aviation organizations worldwide.',
+      "Select Explore Courses, choose a subject and open the course that interests you. Select Start Learning Now, sign in or create an account, and complete your payment online. Once your payment is confirmed, the course is added to your account.",
   },
   {
-    question: 'What stood out most about the course content?',
+    question: "How long can I access my course?",
     answer:
-      'The course content is developed in collaboration with industry professionals and follows international aviation standards. Each module combines theoretical knowledge with practical scenarios to ensure comprehensive understanding.',
+      "Every CourseFlick course includes 12 months' course access from the date you enrol, so you can study at your own pace during that time.",
   },
   {
-    question: 'How valuable was the certification you received?',
+    question: "How does learning on CourseFlick work?",
     answer:
-      'Our certifications are recognized across the aviation industry and can be shared with potential employers, on LinkedIn, and in job applications. They demonstrate verified competency in specific aviation disciplines.',
+      "Our courses are online and self-paced, organised into chapters and lessons. Depending on the course, learning materials may include audio lessons, downloadable PDFs, quizzes and assessments. All you need is a compatible device and an internet connection.",
   },
   {
-    question: 'Would you recommend these courses to other aviation learners?',
+    question: "How are assessments completed?",
     answer:
-      'Absolutely. Our courses are suitable for both beginners looking to enter the aviation industry and experienced professionals seeking to expand their knowledge. The flexible online format makes it accessible to learners worldwide.',
+      "Quizzes and assessments help you check your understanding as you work through a course. To complete a course, you need to meet the course requirements and pass the final examination. Each course page explains what that course includes.",
   },
   {
-    question: 'How was your overall learning experience?',
+    question: "How do I receive my certificate?",
     answer:
-      'The learning experience is designed to be engaging and self-paced. With 24/7 access to course materials, interactive content, and professional support, learners can progress at their own pace while maintaining high standards.',
+      "When you complete your course and pass your final examination, your CourseFlick Certificate of Graduation is generated automatically. It recognises your learning achievement with CourseFlick and is separate from any licence or regulatory qualification.",
+  },
+  {
+    question: "How can I get help?",
+    answer:
+      "Email support@courseflick.com for help with your course, your account, enrolment or payments, or send us a message through our Contact page.",
   },
 ]

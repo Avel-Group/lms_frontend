@@ -26,7 +26,7 @@
                   <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />
                 </svg>
                 <h3 class="text-2xl font-bold text-gray-900 mb-3 text-center">We'd Love to Hear From You</h3>
-                <p class="text-gray-500 text-center text-sm leading-relaxed max-w-xs">Fill out the form and our team will get back to you within 24 hours. We're here to help with any questions about our courses and programs.</p>
+                <p class="text-gray-500 text-center text-sm leading-relaxed max-w-xs">Fill out the form and we will reply by email as soon as we can. You can also email us at support@courseflick.com. We're here to help with any questions about our courses.</p>
                 <!-- Decorative dots -->
                 <div class="flex gap-2 mt-8">
                   <span class="w-2 h-2 rounded-full bg-brown-200"></span>
