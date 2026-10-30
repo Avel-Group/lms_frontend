@@ -59,13 +59,14 @@
               v-model="searchQuery"
               type="text"
               placeholder="Search courses..."
+              aria-label="Search courses"
               class="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-200 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-brown-200 focus:border-brown-400 transition-colors"
             />
           </div>
         </div>
 
         <!-- Results Count -->
-        <p class="text-sm text-gray-400 mb-6">
+        <p class="text-sm text-gray-500 mb-6">
           Showing
           <span class="font-semibold text-gray-600">{{ filteredCourses.length }}</span>
           course{{ filteredCourses.length !== 1 ? "s" : "" }}

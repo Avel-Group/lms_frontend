@@ -28,7 +28,7 @@
 
       <!-- Meta row -->
       <!-- Only show details that are actually filled in on the course record -->
-      <div v-if="showDuration || showLessons" class="flex items-center gap-4 text-xs text-gray-400 mb-4">
+      <div v-if="showDuration || showLessons" class="flex items-center gap-4 text-xs text-gray-500 mb-4">
         <span v-if="showDuration" class="flex items-center gap-1">
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
