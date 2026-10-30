@@ -323,11 +323,12 @@
                 <h4 class="text-2xl font-display font-bold text-slate-900">
                   {{ course.custom_instructor_name }}
                 </h4>
-                <p class="text-slate-500 text-base leading-relaxed max-w-2xl">
-                  {{
-                    course.custom_instructor_quote ||
-                    "Expert instruction for safe and compliant aviation operations."
-                  }}
+                <!-- no approved text: the quote is omitted (r3 finding 4) -->
+                <p
+                  v-if="course.custom_instructor_quote"
+                  class="text-slate-500 text-base leading-relaxed max-w-2xl"
+                >
+                  {{ course.custom_instructor_quote }}
                 </p>
               </div>
             </div>
