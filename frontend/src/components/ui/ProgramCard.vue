@@ -48,7 +48,7 @@ const props = defineProps({
 // Descriptions of the approved, self-hosted lifestyle photographs, used when the CMS row has no image_alt.
 const ALT_BY_FILE = {
 	"cf_lifestyle_1_young_woman_laptop.jpg": "Young woman studying at a laptop",
-	"cf_lifestyle_2_man_30s_laptop.jpg": "Man studying at a laptop",
+	"cf_lifestyle_2_man_notes_laptop.jpg": "Man studying at a laptop",
 };
 const imageAlt = computed(() => {
 	if (props.alt) return props.alt;
