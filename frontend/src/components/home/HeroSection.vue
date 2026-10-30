@@ -157,14 +157,14 @@ const slidesLoading = ref(true);
 
 const slides = ref([]);
 
+// Shown only if the slideshow API fails or returns nothing; mirrors the approved live hero copy.
 const fallbackSlides = [
 	{
 		id: "fallback-1",
 		tag: "Featured",
-		title: "Professional Aviation",
-		subtitle: "Training Programs",
-		description:
-			"Structured online training programs designed for aviation professionals worldwide.",
+		title: "Aviation theory, online",
+		subtitle: "Learning That Clicks",
+		description: "Self-paced aviation theory courses, through to a Certificate of Graduation.",
 		image: "/assets/lms_frontend/images/hero-flight.png",
 	},
 ];
