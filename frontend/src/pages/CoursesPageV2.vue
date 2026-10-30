@@ -23,7 +23,7 @@
           <!-- Category dropdown (restored; it was replaced by subject chips in PR #6, 2b61fa7a).
                Lists "All Courses" plus only the categories that have at least one listed course.
                Selecting a category updates ?category= so Back/Forward and links keep working. -->
-          <div>
+          <div class="course-category-dropdown">
             <label id="course-category-label" for="course-category-select" class="sr-only">Course category</label>
             <!-- vue-multiselect sets the search box's aria-label to name + "-searchbox", so name gives it a readable name -->
             <Multiselect
@@ -271,7 +271,8 @@ onMounted(async () => {
 </script>
 
 <style>
-.multiselect__option--highlight {
+/* Scoped to this page's category dropdown (wrapper class) so other Multiselects are unaffected. */
+.course-category-dropdown .multiselect__option--highlight {
   --tw-bg-opacity: 1;
   background-color: rgb(59 31 11 / var(--tw-bg-opacity, 1)) !important;
   color: white;
