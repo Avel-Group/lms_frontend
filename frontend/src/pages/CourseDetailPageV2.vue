@@ -158,6 +158,13 @@
                 >
               </div>
             </div>
+            <!-- 12-month access period (Terms v2.2 clause 6) -->
+            <p v-if="course.is_enrolled && course.course_access?.access_expired" class="-mt-4 text-sm font-semibold text-red-600">
+               Your 12-month access to this course ended on {{ course.course_access.access_expiry_display }}. Your progress, results and certificates are kept. Please contact support@courseflick.com to renew.
+            </p>
+            <p v-else-if="course.is_enrolled && course.course_access?.access_status === 'active' && course.course_access.access_expiry_display" class="-mt-4 text-sm text-slate-500">
+               Access until {{ course.course_access.access_expiry_display }}
+            </p>
           </div>
 
           <!-- Right: Image -->

@@ -251,6 +251,15 @@ const emit = defineEmits(['completed', 'close'])
 const quizData = ref(null)
 const loading = ref(false)
 const error = ref(null)
+
+// message from a refused request (e.g. HTTP 403 after the 12-month access period)
+function serverMessage(data) {
+  try {
+    const messages = JSON.parse(data?._server_messages || '[]')
+    if (messages.length) return JSON.parse(messages[0]).message
+  } catch (e) {}
+  return null
+}
 const currentQuestionIndex = ref(0)
 const answers = ref({})
 const submitted = ref(false)
@@ -293,7 +302,7 @@ async function fetchQuiz() {
         quizData.value = data.message
         initExam()
      } else {
-        error.value = data.message?.error || "Assessment data not found."
+        error.value = data.message?.error || serverMessage(data) || "Assessment data not found."
      }
   } catch (e) {
      error.value = "Failed to communicate with aviation server."

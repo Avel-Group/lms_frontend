@@ -155,7 +155,7 @@
                 <ul class="space-y-3">
                   <li class="flex items-center gap-3 text-sm text-gray-600">
                     <svg class="w-4 h-4 text-brown-700 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>
-                    Full lifetime access
+                    12 months' course access from enrolment
                   </li>
                   <li class="flex items-center gap-3 text-sm text-gray-600">
                     <svg class="w-4 h-4 text-brown-700 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>
