@@ -110,19 +110,19 @@
        <aside class="space-y-8">
           <div class="sticky top-24 space-y-8">
              <!-- Instructor Card -->
-             <div class="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
+             <div v-if="course.custom_instructor_name" class="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
                 <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-6">Your Instructor</p>
                 <div class="flex items-center gap-4 mb-6">
-                   <div class="w-16 h-16 rounded-2xl bg-brown-100 overflow-hidden shadow-inner">
+                   <div v-if="course.custom_instructor_image" class="w-16 h-16 rounded-2xl bg-brown-100 overflow-hidden shadow-inner">
                       <img :src="handleImagePath(course.custom_instructor_image)" class="w-full h-full object-cover" />
                    </div>
                    <div>
-                      <h4 class="font-bold text-slate-900">{{ course.custom_instructor_name || 'Senior Instructor' }}</h4>
-                      <p class="text-xs text-slate-500 font-medium">{{ course.custom_instructor_role || 'Aviation Specialist' }}</p>
+                      <h4 class="font-bold text-slate-900">{{ course.custom_instructor_name }}</h4>
+                      <p v-if="course.custom_instructor_role" class="text-xs text-slate-500 font-medium">{{ course.custom_instructor_role }}</p>
                    </div>
                 </div>
-                <div class="bg-slate-50 rounded-2xl p-4 text-xs text-slate-500 leading-relaxed italic border border-slate-100">
-                   "Precision in training is the hallmark of a professional aviator. Let's master these modules together."
+                <div v-if="course.custom_instructor_quote" class="bg-slate-50 rounded-2xl p-4 text-xs text-slate-500 leading-relaxed italic border border-slate-100">
+                   {{ course.custom_instructor_quote }}
                 </div>
              </div>
 
