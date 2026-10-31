@@ -20,24 +20,44 @@
         <div
           class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 mb-10"
         >
-          <!-- Subject categories: visible chips; only subjects with at least one listed course -->
-          <div class="flex flex-wrap items-center gap-2" role="group" aria-label="Subjects">
-            <span class="text-sm font-medium text-gray-500 mr-1">Subjects:</span>
-            <button
-              v-for="cat in visibleCategories"
-              :key="cat.slug"
-              type="button"
-              @click="selectCategory(cat)"
-              :aria-pressed="activeCategory?.slug === cat.slug"
-              :class="[
-                'px-4 py-2 text-sm font-medium rounded-full transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-brown-700 focus-visible:ring-offset-2',
-                activeCategory?.slug === cat.slug
-                  ? 'bg-brown-700 text-white shadow-sm'
-                  : 'bg-brown-50 text-gray-600 hover:bg-brown-100 hover:text-brown-700',
-              ]"
-            >
-              {{ cat.label }} ({{ countFor(cat.slug) }})
-            </button>
+          <!-- Category dropdown (restored; it was replaced by subject chips in PR #6, 2b61fa7a).
+               Lists "All Courses" plus only the categories that have at least one listed course.
+               Selecting a category updates ?category= so Back/Forward and links keep working. -->
+          <!-- Focus returns to this wrapper when the list is closed from the keyboard (see onCategoryClose),
+               so keyboard users still see where they are; Enter, Space or Down reopens the list. -->
+          <div
+            ref="categoryWrap"
+            class="course-category-dropdown w-fit rounded-[5px] focus:outline-none focus-visible:ring-2 focus-visible:ring-brown-700 focus-visible:ring-offset-2"
+            role="group"
+            aria-labelledby="course-category-label"
+            tabindex="-1"
+            @keydown.capture="lastCategoryKey = Date.now()"
+            @keydown.self.enter.prevent="categorySelect?.activate()"
+            @keydown.self.space.prevent="categorySelect?.activate()"
+            @keydown.self.down.prevent="categorySelect?.activate()"
+            @keydown.self.tab.exact="focusAfterCategory"
+          >
+            <label id="course-category-label" for="course-category-select" class="sr-only">Course category</label>
+            <!-- vue-multiselect sets the search box's aria-label to name + "-searchbox", so name gives it a readable name -->
+            <Multiselect
+              ref="categorySelect"
+              id="course-category-select"
+              name="Course category"
+              aria-labelledby="course-category-label"
+              :aria-controls="categoryOpen ? CATEGORY_LISTBOX_ID : null"
+              :model-value="activeCategory"
+              @update:model-value="(cat) => selectCategory(cat || ALL)"
+              :options="visibleCategories"
+              label="label"
+              track-by="slug"
+              placeholder="Select category"
+              class="!w-[250px]"
+              selectLabel=""
+              selectedLabel=""
+              deselectLabel=""
+              @open="onCategoryOpen"
+              @close="onCategoryClose"
+            />
           </div>
 
           <!-- Search -->
@@ -155,12 +175,14 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch } from "vue";
+import { ref, computed, onMounted, watch, nextTick } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import SectionBadge from "../components/ui/SectionBadge.vue";
 import CourseCard from "../components/ui/CourseCard.vue";
 import { domain } from "../data/helper";
 import { safeImagePath, categoryFromQuery } from "../data/imagePolicy";
+import Multiselect from "vue-multiselect";
+import "vue-multiselect/dist/vue-multiselect.min.css";
 
 const router = useRouter();
 const route = useRoute();
@@ -212,7 +234,7 @@ const visibleCategories = computed(() =>
 
 // The selected subject is driven by ?category= in the URL. Selecting a subject adds a history
 // entry (router.push), so browser Back/Forward steps through the filters, and the watcher below
-// keeps the chips in step with the URL while the page stays mounted.
+// keeps the dropdown in step with the URL while the page stays mounted.
 const ALL = { slug: "all", label: "All Courses" };
 function syncCategoryFromRoute() {
   activeCategory.value = categoryFromQuery(categories.value, route.query) || ALL;
@@ -228,6 +250,52 @@ function selectCategory(cat) {
 }
 
 watch(() => route.query.category, syncCategoryFromRoute);
+
+// vue-multiselect blurs itself whenever its list closes, so after Escape or Enter keyboard focus
+// would drop to the page body. When the close follows a key press inside the dropdown, move focus
+// to the wrapper, which shows a visible focus ring while the list is closed.
+const categoryWrap = ref(null);
+const categorySelect = ref(null);
+const lastCategoryKey = ref(0);
+function onCategoryClose() {
+  categoryOpen.value = false;
+  syncCategoryAria();
+  if (Date.now() - lastCategoryKey.value > 1000) return; // closed by mouse or by Tab: leave focus alone
+  nextTick(() => {
+    if (document.activeElement === document.body) categoryWrap.value?.focus();
+  });
+}
+// vue-multiselect 3.4.0 points its search box's aria-controls (and, after arrow keys, its
+// aria-activedescendant) at a listbox that exists only while the list is open, and gives the open
+// combobox no aria-controls (axe-core: aria-valid-attr-value, aria-required-attr). Keep these
+// references valid: set aria-controls while open, remove both from the search box while closed.
+const CATEGORY_LISTBOX_ID = "listbox-course-category-select";
+const categoryOpen = ref(false);
+function syncCategoryAria() {
+  const input = categoryWrap.value?.querySelector(".multiselect__input");
+  if (!input) return;
+  if (categoryOpen.value) input.setAttribute("aria-controls", CATEGORY_LISTBOX_ID);
+  else {
+    input.removeAttribute("aria-controls");
+    input.removeAttribute("aria-activedescendant");
+  }
+}
+function onCategoryOpen() {
+  categoryOpen.value = true;
+  syncCategoryAria();
+}
+// Tab from the focused wrapper would otherwise step into the dropdown's own input and reopen it.
+function focusAfterCategory(event) {
+  const wrap = categoryWrap.value;
+  const tabbables = [...document.querySelectorAll('a[href], button, input, select, textarea, [tabindex="0"]')].filter(
+    (el) => !el.disabled && el.offsetParent !== null && !wrap.contains(el)
+  );
+  const next = tabbables.find((el) => wrap.compareDocumentPosition(el) & Node.DOCUMENT_POSITION_FOLLOWING);
+  if (next) {
+    event.preventDefault();
+    next.focus();
+  }
+}
 
 async function fetchCourses() {
   // debugger
@@ -262,6 +330,15 @@ onMounted(async () => {
   // Deep link: /courses?category=<slug> opens with that subject selected.
   syncCategoryFromRoute();
   loading.value = false;
+  syncCategoryAria();
 });
 </script>
 
+<style>
+/* Scoped to this page's category dropdown (wrapper class) so other Multiselects are unaffected. */
+.course-category-dropdown .multiselect__option--highlight {
+  --tw-bg-opacity: 1;
+  background-color: rgb(59 31 11 / var(--tw-bg-opacity, 1)) !important;
+  color: white;
+}
+</style>
