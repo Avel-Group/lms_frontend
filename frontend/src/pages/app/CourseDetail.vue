@@ -87,8 +87,8 @@
           <section>
              <div class="flex items-center justify-between mb-8">
                 <h2 class="text-2xl font-bold text-slate-900 font-display">Training Curriculum</h2>
-                <div class="px-4 py-2 bg-slate-100 rounded-xl text-xs font-bold text-slate-500 uppercase tracking-widest">
-                   {{ course.curriculum?.length || 0 }} Modules
+                <div v-if="chapterCount(course) !== null" class="px-4 py-2 bg-slate-100 rounded-xl text-xs font-bold text-slate-500 uppercase tracking-widest">
+                   {{ chapterLabel(chapterCount(course)) }}
                 </div>
              </div>
              
@@ -164,6 +164,7 @@ import {
   PlayCircleIcon 
 } from 'lucide-vue-next'
 import { useAuth } from '../../composables/useAuth'
+import { chapterCount, chapterLabel } from '../../data/chapterCount'
 
 const route = useRoute()
 const router = useRouter()

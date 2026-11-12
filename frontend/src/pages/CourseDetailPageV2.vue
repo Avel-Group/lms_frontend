@@ -108,7 +108,7 @@
                   </p>
                 </div>
               </div>
-              <div class="flex items-center gap-3">
+              <div v-if="chapterCount(course) !== null" class="flex items-center gap-3">
                 <div
                   class="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-900"
                 >
@@ -121,8 +121,7 @@
                     Content
                   </p>
                   <p class="text-sm font-bold text-slate-900">
-                    {{ course.custom_lessons_count || course.curriculum?.length || 0 }}
-                    Chapter
+                    {{ chapterLabel(chapterCount(course)) }}
                   </p>
                 </div>
               </div>
@@ -215,8 +214,8 @@
               <h3 class="text-2xl font-display font-bold text-slate-900">
                 Training Modules
               </h3>
-              <span class="text-xs font-bold text-slate-600"
-                >{{ course.curriculum.length }} Total Modules</span
+              <span v-if="chapterCount(course) !== null" class="text-xs font-bold text-slate-600"
+                >{{ chapterLabel(chapterCount(course)) }}</span
               >
             </div>
             <div class="space-y-4">
@@ -426,7 +425,7 @@
             :description="rel.description"
             :image="handleImagePath(rel.image)"
             :duration="rel.custom_duration_text || '4 Weeks'"
-            :lessons="rel.custom_lessons_count || 12"
+            :lessons="chapterCount(rel) || 0"
             :level="rel.custom_level || 'Professional'"
             :students="rel.custom_students_count || 150"
             detail-route="CourseDetail"
@@ -454,6 +453,7 @@ import CourseCard from "../components/ui/CourseCard.vue";
 import { domain } from "../data/helper";
 import { createLatestGuard, safeImagePath } from "../data/imagePolicy";
 import { acceptCourseResponse, stillOnCourse } from "../data/courseResponse";
+import { chapterCount, chapterLabel } from "../data/chapterCount";
 
 const route = useRoute();
 const router = useRouter();
