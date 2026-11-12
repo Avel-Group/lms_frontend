@@ -87,7 +87,7 @@
           <section>
              <div class="flex items-center justify-between mb-8">
                 <h2 class="text-2xl font-bold text-slate-900 font-display">Training Curriculum</h2>
-                <div class="px-4 py-2 bg-slate-100 rounded-xl text-xs font-bold text-slate-500 uppercase tracking-widest">
+                <div v-if="chapterCount(course) !== null" class="px-4 py-2 bg-slate-100 rounded-xl text-xs font-bold text-slate-500 uppercase tracking-widest">
                    {{ chapterLabel(chapterCount(course)) }}
                 </div>
              </div>
