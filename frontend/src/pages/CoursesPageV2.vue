@@ -129,7 +129,7 @@
             :description="course.description"
             :image="handleImagePath(course.image)"
             :duration="course.custom_duration_text"
-            :lessons="course.custom_lessons_count"
+            :lessons="chapterCount(course) || 0"
             :level="course.custom_level"
             :students="course.custom_students_count"
             detail-route="CourseDetail"
@@ -181,6 +181,7 @@ import SectionBadge from "../components/ui/SectionBadge.vue";
 import CourseCard from "../components/ui/CourseCard.vue";
 import { domain } from "../data/helper";
 import { safeImagePath, categoryFromQuery } from "../data/imagePolicy";
+import { chapterCount } from "../data/chapterCount";
 import Multiselect from "vue-multiselect";
 import "vue-multiselect/dist/vue-multiselect.min.css";
 
