@@ -121,8 +121,7 @@
                     Content
                   </p>
                   <p class="text-sm font-bold text-slate-900">
-                    {{ course.custom_lessons_count || course.curriculum?.length || 0 }}
-                    Chapter
+                    {{ chapterLabel(chapterCount(course)) }}
                   </p>
                 </div>
               </div>
@@ -216,7 +215,7 @@
                 Training Modules
               </h3>
               <span class="text-xs font-bold text-slate-600"
-                >{{ course.curriculum.length }} Total Modules</span
+                >{{ chapterLabel(chapterCount(course)) }}</span
               >
             </div>
             <div class="space-y-4">
@@ -454,6 +453,7 @@ import CourseCard from "../components/ui/CourseCard.vue";
 import { domain } from "../data/helper";
 import { createLatestGuard, safeImagePath } from "../data/imagePolicy";
 import { acceptCourseResponse, stillOnCourse } from "../data/courseResponse";
+import { chapterCount, chapterLabel } from "../data/chapterCount";
 
 const route = useRoute();
 const router = useRouter();
